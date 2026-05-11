@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="Gripr Test" xmlns="http://www.topografix.com/GPX/1/1">
+  <metadata>
+    <name>Long Gravel Route</name>
+  </metadata>
+  <trk>
+    <name>Gravel Adventure</name>
+    <trkseg>
+      <trkpt lat="45.0" lon="7.0"><ele>200</ele></trkpt>
+      <trkpt lat="45.05" lon="7.05"><ele>250</ele></trkpt>
+      <trkpt lat="45.1" lon="7.1"><ele>280</ele></trkpt>
+      <trkpt lat="45.15" lon="7.15"><ele>300</ele></trkpt>
+      <trkpt lat="45.2" lon="7.2"><ele>320</ele></trkpt>
+      <trkpt lat="45.25" lon="7.25"><ele>340</ele></trkpt>
+      <trkpt lat="45.3" lon="7.3"><ele>360</ele></trkpt>
+      <trkpt lat="45.35" lon="7.35"><ele>380</ele></trkpt>
+      <trkpt lat="45.4" lon="7.4"><ele>400</ele></trkpt>
+      <trkpt lat="45.45" lon="7.45"><ele>420</ele></trkpt>
+    </trkseg>
+  </trk>
+</gpx>

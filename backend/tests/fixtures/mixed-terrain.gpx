@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="Gripr Test" xmlns="http://www.topografix.com/GPX/1/1">
+  <metadata>
+    <name>Mixed Terrain Test Route</name>
+  </metadata>
+  <trk>
+    <name>Mixed Terrain</name>
+    <trkseg>
+      <trkpt lat="47.3769" lon="8.5417">
+        <ele>450.0</ele>
+      </trkpt>
+      <trkpt lat="47.3770" lon="8.5418">
+        <ele>451.0</ele>
+      </trkpt>
+      <trkpt lat="47.3771" lon="8.5419">
+        <ele>452.0</ele>
+      </trkpt>
+      <trkpt lat="47.3772" lon="8.5420">
+        <ele>455.0</ele>
+      </trkpt>
+      <trkpt lat="47.3773" lon="8.5421">
+        <ele>460.0</ele>
+      </trkpt>
+      <trkpt lat="47.3774" lon="8.5422">
+        <ele>468.0</ele>
+      </trkpt>
+      <trkpt lat="47.3775" lon="8.5423">
+        <ele>465.0</ele>
+      </trkpt>
+      <trkpt lat="47.3776" lon="8.5424">
+        <ele>460.0</ele>
+      </trkpt>
+      <trkpt lat="47.3777" lon="8.5425">
+        <ele>455.0</ele>
+      </trkpt>
+      <trkpt lat="47.3778" lon="8.5426">
+        <ele>450.0</ele>
+      </trkpt>
+      <trkpt lat="47.3779" lon="8.5427">
+        <ele>445.0</ele>
+      </trkpt>
+      <trkpt lat="47.3780" lon="8.5428">
+        <ele>430.0</ele>
+      </trkpt>
+      <trkpt lat="47.3781" lon="8.5429">
+        <ele>410.0</ele>
+      </trkpt>
+      <trkpt lat="47.3782" lon="8.5430">
+        <ele>390.0</ele>
+      </trkpt>
+    </trkseg>
+  </trk>
+</gpx>

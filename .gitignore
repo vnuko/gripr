@@ -1,0 +1,59 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.local
+.env.*.local
+.env.development
+.env.test
+.env.production
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*.sublime-workspace
+*.sublime-project
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Test coverage
+coverage/
+
+# Cache
+.cache/
+.npm/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Archive files
+*.zip
+*.tar.gz
+*.rar
+
+# Package locks (keep package-lock.json)
+yarn.lock
+pnpm-lock.yaml
