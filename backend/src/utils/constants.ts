@@ -5,14 +5,6 @@ export const PSI_LIMITS = {
   MAX_REAR: 40,
 } as const;
 
-export const TERRAIN_MODIFIERS = {
-  ROCKY_TERRAIN: -2,
-  WET_ROOTS: -1,
-  FAST_FLOW_TRAIL: 1,
-  LONG_GRAVEL_RIDE: 1,
-  TECHNICAL_DESCENT: -2,
-} as const;
-
 export const RIDER_WEIGHT_ADJUSTMENTS = {
   LIGHT: { min: 0, max: 65, adjustment: -2 },
   MEDIUM: { min: 65, max: 85, adjustment: 0 },

@@ -36,13 +36,6 @@ export interface TerrainBasedAdjustment {
   }[];
 }
 
-export interface PressureResult {
-  baseline: BaselinePressure;
-  adjusted: AdjustedPressure;
-  isValid: boolean;
-  warnings: string[];
-}
-
 export interface PressureResultV2 {
   baseline: BaselinePressure;
   adjusted: AdjustedPressure;

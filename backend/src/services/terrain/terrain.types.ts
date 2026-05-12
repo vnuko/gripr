@@ -31,32 +31,3 @@ export interface TerrainProfile {
   segments?: TerrainTimelineSegment[];
   osmEnrichmentStatus?: OsmEnrichmentStatus;
 }
-
-export interface TerrainClassificationInput {
-  totalDistance: number;
-  elevationGain: number;
-  elevationLoss: number;
-  maxGradient: number;
-  avgGradient: number;
-  difficultyRating: string;
-  bikeType: string;
-}
-
-export interface TerrainClassification {
-  rockyTerrain: boolean;
-  wetRoots: boolean;
-  fastFlowTrail: boolean;
-  longGravelRide: boolean;
-  technicalDescent: boolean;
-}
-
-export interface TerrainModifierResult {
-  frontPsiAdjustment: number;
-  rearPsiAdjustment: number;
-  appliedModifiers: AppliedModifier[];
-}
-
-export interface AppliedModifier {
-  condition: string;
-  adjustment: number;
-}
