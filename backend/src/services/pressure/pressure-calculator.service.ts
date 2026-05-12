@@ -1,3 +1,4 @@
+import logger from '../../utils/logger.js';
 import {
   BIKE_TYPE_BASELINES,
   RIDER_WEIGHT_ADJUSTMENTS,
@@ -45,21 +46,72 @@ export function getBikeTypeBaseline(bikeType: string): { frontBase: number; rear
 }
 
 export function calculateBaselinePressure(input: PressureInput): BaselinePressure {
+  logger.substep('Baseline Pressure Calculation', {
+    input: {
+      riderWeight: input.riderWeight,
+      bikeType: input.bikeType,
+      tireWidth: input.tireWidth,
+      ridingStyle: input.ridingStyle,
+      tubeless: input.tubeless,
+    },
+  });
+  
   const bikeBaseline = getBikeTypeBaseline(input.bikeType);
+  logger.debug('Bike Baseline', {
+    bikeType: input.bikeType,
+    frontBase: bikeBaseline.frontBase,
+    rearBase: bikeBaseline.rearBase,
+  });
+  
   const weightAdjustment = calculateWeightAdjustment(input.riderWeight);
+  logger.debug('Weight Adjustment', {
+    riderWeight: input.riderWeight,
+    adjustment: weightAdjustment,
+    category: input.riderWeight < RIDER_WEIGHT_ADJUSTMENTS.LIGHT.max ? 'LIGHT'
+      : input.riderWeight < RIDER_WEIGHT_ADJUSTMENTS.MEDIUM.max ? 'MEDIUM'
+      : input.riderWeight < RIDER_WEIGHT_ADJUSTMENTS.HEAVY.max ? 'HEAVY'
+      : 'VERY_HEAVY',
+  });
+  
   const widthAdjustment = calculateWidthAdjustment(input.tireWidth);
+  logger.debug('Width Adjustment', {
+    tireWidth: input.tireWidth,
+    adjustment: widthAdjustment,
+    category: input.tireWidth < TIRE_WIDTH_ADJUSTMENTS.NARROW.max ? 'NARROW'
+      : input.tireWidth < TIRE_WIDTH_ADJUSTMENTS.MEDIUM.max ? 'MEDIUM'
+      : 'WIDE',
+  });
+  
   const styleAdjustment = calculateStyleAdjustment(input.ridingStyle);
+  logger.debug('Style Adjustment', {
+    ridingStyle: input.ridingStyle,
+    adjustment: styleAdjustment,
+  });
 
   const frontPsi = bikeBaseline.frontBase + weightAdjustment - widthAdjustment + styleAdjustment;
   const rearPsi = bikeBaseline.rearBase + weightAdjustment - widthAdjustment + styleAdjustment;
 
-  return {
+  const result = {
     frontPsi,
     rearPsi,
     weightAdjustment,
     widthAdjustment,
     styleAdjustment,
   };
+  
+  logger.success('Baseline Pressure Result', {
+    frontPsi,
+    rearPsi,
+    breakdown: {
+      frontBase: bikeBaseline.frontBase,
+      rearBase: bikeBaseline.rearBase,
+      weightAdjustment,
+      widthAdjustment: '-' + Math.abs(widthAdjustment),
+      styleAdjustment,
+    },
+  });
+
+  return result;
 }
 
 export function validatePressureRange(frontPsi: number, rearPsi: number): { valid: boolean; warnings: string[] } {
@@ -86,8 +138,8 @@ export function validatePressureRange(frontPsi: number, rearPsi: number): { vali
 
 export function clampPressureToLimits(frontPsi: number, rearPsi: number): { frontPsi: number; rearPsi: number } {
   return {
-    frontPsi: Math.max(PSI_LIMITS.MIN_FRONT, Math.min(PSI_LIMITS.MAX_FRONT, frontPsi)),
-    rearPsi: Math.max(PSI_LIMITS.MIN_REAR, Math.min(PSI_LIMITS.MAX_REAR, rearPsi)),
+    frontPsi: Math.round(Math.max(PSI_LIMITS.MIN_FRONT, Math.min(PSI_LIMITS.MAX_FRONT, frontPsi))),
+    rearPsi: Math.round(Math.max(PSI_LIMITS.MIN_REAR, Math.min(PSI_LIMITS.MAX_REAR, rearPsi))),
   };
 }
 
@@ -98,6 +150,16 @@ export function calculateTerrainBasedAdjustment(
   rearAdjustment: number;
   appliedWeights: { surface: string; weight: number; modifier: number; contribution: number }[];
 } {
+  logger.substep('Terrain-Based Adjustment Calculation', {
+    composition: {
+      asphalt: Math.round(composition.asphalt * 100) + '%',
+      gravel: Math.round(composition.gravel * 100) + '%',
+      dirt: Math.round(composition.dirt * 100) + '%',
+      rocky: Math.round(composition.rocky * 100) + '%',
+      technical: Math.round(composition.technical * 100) + '%',
+    },
+  });
+  
   const appliedWeights: { surface: string; weight: number; modifier: number; contribution: number }[] = [];
   
   let totalAdjustment = 0;
@@ -115,12 +177,32 @@ export function calculateTerrainBasedAdjustment(
         modifier,
         contribution,
       });
+      
+      logger.debug('Surface Contribution', {
+        surface,
+        percentage: Math.round(percentage * 100) + '%',
+        modifier,
+        contribution: Math.round(contribution * 100) / 100 + ' psi',
+        formula: `${Math.round(percentage * 100)}% × ${modifier} = ${Math.round(contribution * 100) / 100}`,
+      });
     }
   }
   
-  return {
+  const result = {
     frontAdjustment: totalAdjustment,
     rearAdjustment: totalAdjustment,
     appliedWeights,
   };
+  
+  logger.success('Terrain Adjustment Result', {
+    totalAdjustment: Math.round(totalAdjustment * 100) / 100 + ' psi',
+    appliedWeights: appliedWeights.map(w => ({
+      surface: w.surface,
+      weight: Math.round(w.weight * 100) + '%',
+      modifier: w.modifier,
+      contribution: Math.round(w.contribution * 100) / 100 + ' psi',
+    })),
+  });
+  
+  return result;
 }

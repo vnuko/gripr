@@ -1,4 +1,6 @@
+import 'openai/shims/node';
 import OpenAI from 'openai';
+import logger from '../../utils/logger.js';
 import { getEnvConfig } from '../../types/env.types.js';
 import { PSI_LIMITS } from '../../utils/constants.js';
 import type { AIContextV2, AIContext, AIRecommendation, AIResponse, OpenAIConfig } from './ai.types.js';
@@ -23,6 +25,8 @@ export async function callOpenAI(
   context: AIContextV2 | AIContext,
   config?: Partial<OpenAIConfig>
 ): Promise<AIResponse> {
+  const callStartTime = Date.now();
+  
   try {
     const envConfig = getEnvConfig();
     const openai = createOpenAIClient();
@@ -31,6 +35,18 @@ export async function callOpenAI(
       ? buildPromptV2(context as AIContextV2)
       : buildValidationPrompt(context as AIContext);
 
+    logger.substep('LLM Request', {
+      model: config?.model ?? envConfig.OPENAI_MODEL,
+      maxTokens: config?.maxTokens ?? envConfig.OPENAI_MAX_TOKENS,
+      temperature: config?.temperature ?? envConfig.OPENAI_TEMPERATURE,
+      contextType: 'terrainProfile' in context ? 'v2' : 'v1',
+      promptLength: prompt.length + ' chars',
+      promptPreview: prompt.substring(0, 500) + '...',
+      fullPrompt: prompt,
+    });
+
+    const apiStartTime = Date.now();
+    
     const completion = await openai.chat.completions.create({
       model: config?.model ?? envConfig.OPENAI_MODEL,
       messages: [
@@ -48,6 +64,8 @@ export async function callOpenAI(
       temperature: config?.temperature ?? envConfig.OPENAI_TEMPERATURE,
       response_format: { type: 'json_object' },
     });
+    
+    const apiDuration = Date.now() - apiStartTime;
 
     const content = completion.choices[0]?.message?.content;
 
@@ -55,15 +73,51 @@ export async function callOpenAI(
       throw new OpenAIError('No response content from OpenAI');
     }
 
+    logger.debug('LLM Raw Response', {
+      apiDuration: apiDuration + ' ms',
+      contentLength: content.length + ' chars',
+      rawResponse: content,
+      usage: completion.usage ? {
+        promptTokens: completion.usage.prompt_tokens,
+        completionTokens: completion.usage.completion_tokens,
+        totalTokens: completion.usage.total_tokens,
+      } : null,
+    });
+
     const parsed = parseAIResponse(content);
+    logger.debug('LLM Parsed Response', {
+      frontPsi: parsed.frontPsi,
+      rearPsi: parsed.rearPsi,
+      reasoning: parsed.reasoning,
+      confidence: parsed.confidence,
+      warnings: parsed.warnings,
+    });
+
     const validated = validateAIRecommendation(parsed, context.adjustedPsi);
+    const totalDuration = Date.now() - callStartTime;
+    
+    logger.success('LLM Validated', {
+      totalDuration: totalDuration + ' ms',
+      apiDuration: apiDuration + ' ms',
+      validated: {
+        frontPsi: validated.frontPsi,
+        rearPsi: validated.rearPsi,
+        reasoning: validated.reasoning?.substring(0, 200) + (validated.reasoning?.length > 200 ? '...' : ''),
+        confidence: validated.confidence,
+        warnings: validated.warnings,
+      },
+    });
 
     return {
       success: true,
       recommendation: validated,
     };
   } catch (error) {
-    console.error('[OpenAI Error]', error);
+    const totalDuration = Date.now() - callStartTime;
+    logger.error('LLM Call Failed', error instanceof Error ? error : new Error('Unknown error'), {
+      totalDuration: totalDuration + ' ms',
+      fallbackUsed: true,
+    });
 
     return {
       success: false,
@@ -138,8 +192,8 @@ export function createFallbackRecommendation(
   adjustedPsi: { front: number; rear: number }
 ): AIRecommendation {
   return {
-    frontPsi: adjustedPsi.front,
-    rearPsi: adjustedPsi.rear,
+    frontPsi: Math.round(adjustedPsi.front),
+    rearPsi: Math.round(adjustedPsi.rear),
     reasoning:
       'Using calculated pressure values (AI validation unavailable). These values are based on rider weight, bike type, tire width, and terrain analysis.',
     confidence: 'medium',

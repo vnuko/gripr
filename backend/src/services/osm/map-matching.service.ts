@@ -128,16 +128,25 @@ export function matchPointsToWays(
     const nearest = findNearestWay({ lat: point.latitude, lon: point.longitude }, ways);
     
     if (nearest) {
-      matchedSegments.push({
+      const segment: OsmSegment = {
         lat: point.latitude,
         lon: point.longitude,
         osmId: `${nearest.way.type}/${nearest.way.id}`,
         highway: nearest.way.tags?.highway ?? 'unknown',
-        surface: nearest.way.tags?.surface,
-        smoothness: nearest.way.tags?.smoothness,
-        mtbScale: nearest.way.tags?.mtbScale,
         distanceFromPoint: nearest.distance,
-      });
+      };
+      
+      if (nearest.way.tags?.surface !== undefined) {
+        segment.surface = nearest.way.tags.surface;
+      }
+      if (nearest.way.tags?.smoothness !== undefined) {
+        segment.smoothness = nearest.way.tags.smoothness;
+      }
+      if (nearest.way.tags?.mtbScale !== undefined) {
+        segment.mtbScale = nearest.way.tags.mtbScale;
+      }
+      
+      matchedSegments.push(segment);
     } else {
       unmatchedPoints.push({
         lat: point.latitude,

@@ -5,12 +5,12 @@ interface AIExplanationProps {
   weather: string;
   temperature: number;
   ridingStyle: string;
-  skillLevel: string;
   bikeType: string;
   tubeless: boolean;
   tireInserts: boolean;
   frontPsi: number;
   rearPsi: number;
+  aiReasoning: string;
 }
 
 export function AIExplanation({
@@ -18,16 +18,17 @@ export function AIExplanation({
   weather,
   temperature,
   ridingStyle,
-  skillLevel,
   bikeType,
   tubeless,
   tireInserts,
   frontPsi,
   rearPsi,
+  aiReasoning,
 }: AIExplanationProps) {
   const hasRockyOrTechnical =
-    selectedTerrains.includes('Rocky Terrain') ||
-    selectedTerrains.includes('Technical Descents');
+    selectedTerrains.includes('Rocky / Stony Terrain') ||
+    selectedTerrains.includes('Roots / Rough Trails') ||
+    selectedTerrains.includes('Steep / Extreme Descents');
   const isWet = weather === 'wet';
   const isDamp = weather === 'damp';
   const isCold = temperature < 10;
@@ -103,9 +104,9 @@ export function AIExplanation({
           <Cpu size={22} strokeWidth={1.8} />
         </div>
         <div style={{ flex: 1 }}>
-          <div className="gripr-ai-name">GripIQ AI Engine</div>
+          <div className="gripr-ai-name">GripR AI Summary</div>
           <div className="gripr-ai-label">
-            Trail Intelligence · v2.4.1 · Analysed {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+            Analysed on: {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
           </div>
         </div>
         <div
@@ -146,10 +147,7 @@ export function AIExplanation({
           {explanation}
         </p>
         <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--gripr-text-secondary)', lineHeight: 1.7 }}>
-          {`These recommendations are calibrated for your ${skillLevel.toLowerCase()}-level ${bikeType} setup 
-          with ${tubeless ? 'tubeless tyres' : 'tube-type tyres'}${tireInserts ? ' and protective inserts' : ''}. 
-          Always verify pressures with a quality gauge before each ride and fine-tune to personal preference 
-          after the first descent.`}
+          {aiReasoning || 'AI analysis unavailable. Using deterministic pressure calculation based on your setup and terrain.'}
         </p>
       </div>
 
@@ -211,7 +209,7 @@ export function AIExplanation({
       >
         <AlertTriangle size={13} style={{ flexShrink: 0, marginTop: 1 }} />
         <span>
-          GripIQ recommendations are advisory only. Conditions vary — always ride within your ability and
+          GripR recommendations are advisory only. Conditions vary — always ride within your ability and
           consult a qualified mechanic for safety-critical adjustments.
         </span>
       </div>

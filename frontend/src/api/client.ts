@@ -2,6 +2,118 @@ import type { AnalyzeResponse, HealthResponse, AnalyzeRequest } from './generate
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000';
 
+const BACKEND_TERRAIN_TYPES = {
+  rocky: 'rocky',
+  technical: 'technical',
+  dirt: 'dirt',
+  gravel: 'gravel',
+  asphalt: 'asphalt',
+} as const;
+
+type BackendTerrainType = keyof typeof BACKEND_TERRAIN_TYPES;
+
+const TERRAIN_MAPPING: Record<string, BackendTerrainType> = {
+  'Road / Paved Path': 'asphalt',
+  'Gravel / Dirt Roads': 'gravel',
+  'Forest / Soil Trails': 'dirt',
+  'Muddy / Soft Ground': 'dirt',
+  'Rocky / Stony Terrain': 'rocky',
+  'Roots / Rough Trails': 'technical',
+  'Steep / Extreme Descents': 'technical',
+};
+
+interface BackendAnalyzeResponse {
+  baseline: { frontPsi: number; rearPsi: number };
+  adjusted: { frontPsi: number; rearPsi: number };
+  aiRecommendation: {
+    frontPsi: number;
+    rearPsi: number;
+    reasoning: string;
+    confidence?: 'high' | 'medium' | 'low';
+    warnings?: string[];
+  };
+  routeMetrics?: {
+    totalDistance: number;
+    elevationGain: number;
+    elevationLoss: number;
+    maxGradient: number;
+    avgGradient: number;
+    difficultyRating: string;
+  };
+  terrainProfile?: {
+    composition: {
+      asphalt: number;
+      gravel: number;
+      dirt: number;
+      rocky: number;
+      technical: number;
+    };
+  };
+  inputMode: 'gpx' | 'manual';
+}
+
+function transformBackendResponse(
+  backendResponse: BackendAnalyzeResponse
+): AnalyzeResponse {
+  return {
+    baseline: {
+      front: backendResponse.baseline.frontPsi,
+      rear: backendResponse.baseline.rearPsi,
+      confidence: 65,
+      note: 'Standard weight-based starting point.',
+    },
+    terrainAdjusted: {
+      front: backendResponse.adjusted.frontPsi,
+      rear: backendResponse.adjusted.rearPsi,
+      confidence: 85,
+      note: 'Adjusted for terrain and riding style.',
+    },
+    aiRecommended: {
+      front: backendResponse.aiRecommendation.frontPsi,
+      rear: backendResponse.aiRecommendation.rearPsi,
+      confidence:
+        backendResponse.aiRecommendation.confidence === 'high'
+          ? 95
+          : backendResponse.aiRecommendation.confidence === 'medium'
+          ? 80
+          : 70,
+      note: backendResponse.aiRecommendation.reasoning,
+    },
+    routeMetrics: backendResponse.routeMetrics,
+    warnings: backendResponse.aiRecommendation.warnings,
+  };
+}
+
+function mapTerrainsToPercentages(selectedTerrains: string[]): {
+  asphalt?: number;
+  gravel?: number;
+  dirt?: number;
+  rocky?: number;
+  technical?: number;
+} {
+  if (selectedTerrains.length === 0) {
+    return { dirt: 1 };
+  }
+
+  const backendTypes: Record<string, number> = {};
+  
+  for (const terrain of selectedTerrains) {
+    const backendType = TERRAIN_MAPPING[terrain];
+    if (backendType) {
+      backendTypes[backendType] = (backendTypes[backendType] || 0) + 1;
+    }
+  }
+
+  const total = selectedTerrains.length;
+  const result: Record<string, number> = {};
+  
+  for (const [type, count] of Object.entries(backendTypes)) {
+    result[type] = count / total;
+  }
+
+  return result;
+}
+
 export async function analyzeRoute(
   file: File,
   riderInput: AnalyzeRequest
@@ -10,16 +122,9 @@ export async function analyzeRoute(
   formData.append('file', file);
   formData.append('riderWeight', riderInput.riderWeight.toString());
   formData.append('bikeType', riderInput.bikeType);
-  formData.append('tireFront', riderInput.tireFront.toString());
-  formData.append('tireRear', riderInput.tireRear.toString());
-  formData.append('wheelSize', riderInput.wheelSize);
+  formData.append('tireWidth', (riderInput.tireFront ?? 2.4).toString());
   formData.append('tubeless', riderInput.tubeless.toString());
-  formData.append('tireInserts', riderInput.tireInserts.toString());
-  formData.append('skillLevel', riderInput.skillLevel);
   formData.append('ridingStyle', riderInput.ridingStyle);
-  formData.append('selectedTerrains', JSON.stringify(riderInput.selectedTerrains));
-  formData.append('weather', riderInput.weather);
-  formData.append('temperature', riderInput.temperature.toString());
 
   const response = await fetch(`${API_BASE_URL}/api/analyze`, {
     method: 'POST',
@@ -31,7 +136,39 @@ export async function analyzeRoute(
     throw new Error(errorData.message ?? 'Analysis failed');
   }
 
-  return response.json();
+  const backendResponse: BackendAnalyzeResponse = await response.json();
+  return transformBackendResponse(backendResponse);
+}
+
+export async function analyzeTerrain(
+  riderInput: AnalyzeRequest
+): Promise<AnalyzeResponse> {
+  const manualTerrain = mapTerrainsToPercentages(riderInput.selectedTerrains || []);
+
+  const body = {
+    riderWeight: riderInput.riderWeight,
+    bikeType: riderInput.bikeType,
+    tireWidth: riderInput.tireFront ?? 2.4,
+    tubeless: riderInput.tubeless,
+    ridingStyle: riderInput.ridingStyle,
+    manualTerrain,
+  };
+
+  const response = await fetch(`${API_BASE_URL}/api/analyze`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message ?? 'Analysis failed');
+  }
+
+  const backendResponse: BackendAnalyzeResponse = await response.json();
+  return transformBackendResponse(backendResponse);
 }
 
 export async function checkHealth(): Promise<HealthResponse> {
@@ -98,8 +235,8 @@ export function computeMockRecommendations(state: AnalyzeRequest): AnalyzeRespon
   const wAdj = weatherAdj[weather] ?? 0;
   const tubelessAdj = tubeless ? -2 : 0;
   const insertAdj = tireInserts ? -1 : 0;
-  const rockyAdj = (selectedTerrains?.includes('Rocky Terrain') ?? false) ? -0.5 : 0;
-  const wetRootsAdj = (selectedTerrains?.includes('Wet Roots') ?? false) ? -0.5 : 0;
+  const rockyAdj = (selectedTerrains?.includes('Rocky / Stony Terrain') ?? false) ? -0.5 : 0;
+  const wetRootsAdj = (selectedTerrains?.includes('Roots / Rough Trails') ?? false) ? -0.5 : 0;
   const tempAdj = temperature < 5 ? -1 : temperature > 30 ? 1 : 0;
 
   const terrainAdjFront = Math.round((baseFront + sAdj + rAdj + bAdj + wAdj + rockyAdj + wetRootsAdj) * 2) / 2;

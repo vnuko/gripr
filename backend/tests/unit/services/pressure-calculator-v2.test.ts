@@ -85,7 +85,7 @@ describe('Pressure Calculator V2', () => {
       
       const result = calculateAdjustedPressureV2(baseline, terrainProfile, true);
       
-      expect(result.frontPsi).toBeCloseTo(22 + 0.5 - 1, 1);
+      expect(result.frontPsi).toBe(Math.round(22 + 0.5 - 1));
       expect(result.terrainBased.appliedWeights.length).toBe(1);
     });
 

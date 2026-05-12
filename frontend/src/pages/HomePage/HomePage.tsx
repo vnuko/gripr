@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Sparkles, UploadCloud, Loader2, ChevronDown, Mountain, Droplets, Zap, Route, Wind, Layers, CloudRain, Thermometer } from 'lucide-react';
+import { Sparkles, UploadCloud, Loader2, ChevronDown, Mountain, Droplets, Route, CloudRain, Thermometer, Car, Trees, TreePine, TrendingDown } from 'lucide-react';
 import { GriprNavbar, HeroSection, Footer } from '../../components/Layout';
 import { GPXUpload } from '../../components/GPXUpload';
 import { RiderForm } from '../../components/RiderForm';
@@ -29,14 +29,13 @@ function GriprSwitch({ checked, onChange, disabled = false }: { checked: boolean
 }
 
 const TERRAIN_OPTIONS = [
-  { label: 'Rocky Terrain', icon: <Mountain size={12} /> },
-  { label: 'Wet Roots', icon: <Droplets size={12} /> },
-  { label: 'Fast Flow Trail', icon: <Zap size={12} /> },
-  { label: 'Long Gravel Ride', icon: <Route size={12} /> },
-  { label: 'Technical Descents', icon: <ChevronDown size={12} /> },
-  { label: 'Loose Corners', icon: <Wind size={12} /> },
-  { label: 'Muddy Conditions', icon: <Droplets size={12} /> },
-  { label: 'Dry Hardpack', icon: <Layers size={12} /> },
+  { label: 'Road / Paved Path', icon: <Car size={12} /> },
+  { label: 'Gravel / Dirt Roads', icon: <Route size={12} /> },
+  { label: 'Forest / Soil Trails', icon: <Trees size={12} /> },
+  { label: 'Muddy / Soft Ground', icon: <Droplets size={12} /> },
+  { label: 'Rocky / Stony Terrain', icon: <Mountain size={12} /> },
+  { label: 'Roots / Rough Trails', icon: <TreePine size={12} /> },
+  { label: 'Steep / Extreme Descents', icon: <TrendingDown size={12} /> },
 ];
 
 const getWeatherDescription = (weather: string) => {
@@ -56,19 +55,50 @@ const getTempColor = (temp: number) => {
 };
 
 const getTempDescription = (temp: number) => {
-  if (temp <= 5) return 'Cold — air pressure drops, adjust before ride';
-  if (temp <= 20) return 'Moderate — standard pressure range';
-  if (temp <= 32) return 'Warm — slight pressure increase expected';
-  return 'Hot — check pressure mid-ride';
+  if (temp <= 0)
+    return 'Freezing — tire pressure noticeably lower, check before riding';
+  if (temp <= 10)
+    return 'Cold — slight pressure drop expected';
+  if (temp <= 25)
+    return 'Normal — stable riding conditions';
+  if (temp <= 35)
+    return 'Warm — minor pressure increase possible';
+  return 'Very hot — pressure may rise during long rides';
 };
 
-function StepProgress({ inputMode, gpxFile, selectedTerrains, riderWeight, bikeType, tireFront, tireRear }: { inputMode: 'terrain' | 'gpx'; gpxFile: File | null; selectedTerrains: string[]; riderWeight: number | undefined; bikeType: string | undefined; tireFront: number | undefined; tireRear: number | undefined }) {
+function StepProgress({
+  inputMode,
+  gpxFile,
+  selectedTerrains,
+  riderWeight,
+  bikeType,
+  tireFront,
+  tireRear,
+  status,
+}: {
+  inputMode: 'terrain' | 'gpx';
+  gpxFile: File | null;
+  selectedTerrains: string[];
+  riderWeight: number | undefined;
+  bikeType: string | undefined;
+  tireFront: number | undefined;
+  tireRear: number | undefined;
+  status: string;
+}) {
+  const AMBER = 'rgb(255, 140, 85)';
+  const GRAY = 'var(--gripr-surface-3)';
+  const GRAY_BORDER = 'var(--gripr-border)';
+  const GRAY_TEXT = 'var(--gripr-text-muted)';
+
   const steps = [
-    { label: inputMode === 'gpx' ? 'GPX Route' : 'Terrain', done: inputMode === 'gpx' ? !!gpxFile : selectedTerrains.length > 0 },
-    { label: 'Rider Info', done: riderWeight !== undefined && riderWeight !== null },
+    {
+      label: inputMode === 'gpx' ? 'GPX Route' : 'Terrain',
+      done: inputMode === 'gpx' ? !!gpxFile : selectedTerrains.length > 0,
+    },
+    { label: 'Rider Info', done: riderWeight !== undefined },
     { label: 'Bike Setup', done: bikeType !== undefined && tireFront !== undefined && tireRear !== undefined },
     { label: 'Weather', done: true },
-    { label: 'Analyse', done: false },
+    { label: 'Analysed', done: status === 'loading' || status === 'success' },
   ];
 
   return (
@@ -76,7 +106,7 @@ function StepProgress({ inputMode, gpxFile, selectedTerrains, riderWeight, bikeT
       style={{
         display: 'flex',
         alignItems: 'center',
-        marginBottom: '2rem',
+        marginBottom: '1.5rem',
         overflowX: 'auto',
         paddingBottom: '0.25rem',
       }}
@@ -86,16 +116,16 @@ function StepProgress({ inputMode, gpxFile, selectedTerrains, riderWeight, bikeT
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
             <div
               style={{
-                width: 30,
-                height: 30,
+                width: 28,
+                height: 28,
                 borderRadius: '50%',
-                background: step.done ? 'var(--gripr-accent)' : 'var(--gripr-surface-3)',
-                border: `2px solid ${step.done ? 'var(--gripr-accent)' : 'var(--gripr-border)'}`,
+                background: step.done ? AMBER : GRAY,
+                border: `2px solid ${step.done ? AMBER : GRAY_BORDER}`,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: step.done ? 'white' : 'var(--gripr-text-muted)',
-                fontSize: '0.72rem',
+                color: step.done ? 'white' : GRAY_TEXT,
+                fontSize: '0.7rem',
                 fontWeight: 700,
                 fontFamily: 'var(--gripr-font-display)',
                 transition: 'all 0.3s',
@@ -106,9 +136,9 @@ function StepProgress({ inputMode, gpxFile, selectedTerrains, riderWeight, bikeT
             </div>
             <span
               style={{
-                fontSize: '0.68rem',
+                fontSize: '0.65rem',
                 fontWeight: 700,
-                color: step.done ? 'var(--gripr-accent)' : 'var(--gripr-text-muted)',
+                color: step.done ? AMBER : GRAY_TEXT,
                 fontFamily: 'var(--gripr-font-display)',
                 textTransform: 'uppercase',
                 letterSpacing: '0.05em',
@@ -123,9 +153,9 @@ function StepProgress({ inputMode, gpxFile, selectedTerrains, riderWeight, bikeT
               style={{
                 flex: 1,
                 height: 2,
-                background: step.done ? 'var(--gripr-accent)' : 'var(--gripr-border)',
-                margin: '0 6px',
-                marginBottom: 18,
+                background: step.done ? AMBER : GRAY_BORDER,
+                margin: '0 5px',
+                marginBottom: 16,
                 transition: 'background 0.3s',
                 borderRadius: 50,
               }}
@@ -136,6 +166,14 @@ function StepProgress({ inputMode, gpxFile, selectedTerrains, riderWeight, bikeT
     </div>
   );
 }
+
+const BIKE_TYPE_TIRE_DEFAULTS: Record<string, { front: number; rear: number }> = {
+  xc: { front: 2.2, rear: 2.2 },
+  trail: { front: 2.4, rear: 2.4 },
+  enduro: { front: 2.5, rear: 2.5 },
+  downhill: { front: 2.5, rear: 2.5 },
+  gravel: { front: 1.77, rear: 1.77 },
+};
 
 function AnalysisProgress() {
   const [step, setStep] = useState(0);
@@ -209,7 +247,7 @@ export function HomePage() {
     tireFront: undefined,
     tireRear: undefined,
     wheelSize: '29"',
-    tubeless: true,
+    tubeless: false,
     tireInserts: false,
     selectedTerrains: [],
     weather: 'dry',
@@ -219,8 +257,11 @@ export function HomePage() {
   const { status, result, error, errorType, analyze, reset: resetAnalysis } = useAnalyze();
 
   const handleSubmit = useCallback(async () => {
-    const { isValid } = validateAll();
-    if (!isValid) return;
+    const { isValid, errors } = validateAll();
+    if (!isValid) {
+      console.error('Form validation failed:', errors);
+      return;
+    }
 
     const riderInput: AnalyzeRequest = {
       riderWeight: values.riderWeight as number,
@@ -289,7 +330,18 @@ export function HomePage() {
           </p>
         </div>
 
-        <StepProgress inputMode={inputMode} gpxFile={gpxFile} selectedTerrains={values.selectedTerrains as string[]} riderWeight={values.riderWeight as number | undefined} bikeType={values.bikeType as string | undefined} tireFront={values.tireFront as number | undefined} tireRear={values.tireRear as number | undefined} />
+        {status !== 'idle' && (
+          <StepProgress
+            inputMode={inputMode}
+            gpxFile={gpxFile}
+            selectedTerrains={values.selectedTerrains as string[]}
+            riderWeight={values.riderWeight as number | undefined}
+            bikeType={values.bikeType as string | undefined}
+            tireFront={values.tireFront as number | undefined}
+            tireRear={values.tireRear as number | undefined}
+            status={status}
+          />
+        )}
 
         {status === 'loading' && <LoadingSpinner fullPage message="Analyzing your route..." />}
 
@@ -320,12 +372,12 @@ export function HomePage() {
                 weather={values.weather as string}
                 temperature={values.temperature as number}
                 ridingStyle={values.ridingStyle as string}
-                skillLevel={values.skillLevel as string}
                 bikeType={values.bikeType as string}
                 tubeless={values.tubeless as boolean}
                 tireInserts={values.tireInserts as boolean}
                 frontPsi={result.aiRecommended.front}
                 rearPsi={result.aiRecommended.rear}
+                aiReasoning={result.aiRecommended.note}
               />
             </div>
 
@@ -442,7 +494,14 @@ export function HomePage() {
 
             <BikeSetupForm
               bikeType={values.bikeType as string}
-              onBikeTypeChange={(v: string) => setValue('bikeType', v)}
+              onBikeTypeChange={(v: string) => {
+                setValue('bikeType', v);
+                const defaults = BIKE_TYPE_TIRE_DEFAULTS[v];
+                if (defaults) {
+                  setValue('tireFront', defaults.front);
+                  setValue('tireRear', defaults.rear);
+                }
+              }}
               tireFront={values.tireFront as number}
               onTireFrontChange={(v: number) => setValue('tireFront', v)}
               tireRear={values.tireRear as number}
@@ -555,11 +614,7 @@ export function HomePage() {
                         style={{
                           display: 'inline-flex',
                           alignItems: 'center',
-                          gap: 6,
-                          background: 'var(--gripr-surface-3)',
-                          border: '1px solid var(--gripr-border)',
-                          borderRadius: 8,
-                          padding: '4px 10px',
+                          gap: 6
                         }}
                       >
                         <Thermometer size={12} style={{ color: getTempColor(values.temperature as number) }} />
@@ -580,7 +635,7 @@ export function HomePage() {
                     Ready to Optimise?
                   </h3>
                   <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--gripr-text-secondary)' }}>
-                    GripIQ will analyse your route, setup and conditions to recommend the perfect tire pressures.
+                    GripR will analyse your route, setup and conditions to recommend the perfect tire pressures.
                   </p>
                 </div>
 

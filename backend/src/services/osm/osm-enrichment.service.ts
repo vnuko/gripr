@@ -1,3 +1,4 @@
+import logger from '../../utils/logger.js';
 import type {
   OsmSegment,
   SurfaceType,
@@ -79,11 +80,18 @@ export function enrichSegment(
   index: number
 ): SegmentEnrichment {
   const osmTags: OsmTags = {
-    surface: segment.surface,
     highway: segment.highway,
-    smoothness: segment.smoothness,
-    mtbScale: segment.mtbScale,
   };
+  
+  if (segment.surface !== undefined) {
+    osmTags.surface = segment.surface;
+  }
+  if (segment.smoothness !== undefined) {
+    osmTags.smoothness = segment.smoothness;
+  }
+  if (segment.mtbScale !== undefined) {
+    osmTags.mtbScale = segment.mtbScale;
+  }
   
   return {
     segmentIndex: index,
@@ -123,7 +131,15 @@ export async function enrichRouteWithOsm(
   enrichments: SegmentEnrichment[];
   status: OsmEnrichmentStatus;
 }> {
+  const lastPoint = points.length > 0 ? points[points.length - 1] : undefined;
+  logger.substep('Route Enrichment', {
+    pointCount: points.length,
+    firstPoint: points[0] ? { lat: points[0].latitude, lon: points[0].longitude } : null,
+    lastPoint: lastPoint ? { lat: lastPoint.latitude, lon: lastPoint.longitude } : null,
+  });
+  
   if (points.length === 0) {
+    logger.warn('No Points to Enrich', 'Empty points array');
     return {
       enrichments: [],
       status: {
@@ -138,9 +154,24 @@ export async function enrichRouteWithOsm(
   }
   
   try {
+    logger.time('map-matching');
     const matchResult = await performMapMatching(points);
+    const matchingDuration = logger.timeEnd('map-matching');
+    
+    logger.debug('Map Matching Result', {
+      duration: matchingDuration + ' ms',
+      matchRate: matchResult.matchRate?.toFixed(2),
+      matchedSegments: matchResult.matchedSegments?.length ?? 0,
+      unmatchedPoints: matchResult.unmatchedPoints?.length ?? 0,
+    });
     
     if (!isMatchSufficient(matchResult)) {
+      logger.warn('Map Match Insufficient', `Match rate ${matchResult.matchRate.toFixed(2)} below threshold`, {
+        matchRate: matchResult.matchRate,
+        matchedSegments: matchResult.matchedSegments.length,
+        unmatchedPoints: matchResult.unmatchedPoints.length,
+      });
+      
       return {
         enrichments: points.map((p, i) => 
           createFallbackSegment({ lat: p.latitude, lon: p.longitude, index: i })
@@ -160,9 +191,30 @@ export async function enrichRouteWithOsm(
       enrichSegment(seg, i)
     );
     
+    logger.debug('Matched Segments Enriched', {
+      count: matchedEnrichments.length,
+      sampleEnrichments: matchedEnrichments.slice(0, 5).map(e => ({
+        index: e.segmentIndex,
+        surface: e.classifiedSurface,
+        confidence: e.confidence,
+        tags: e.osmTags,
+      })),
+    });
+    
     const fallbackEnrichments = matchResult.unmatchedPoints.map(p => 
       createFallbackSegment(p)
     );
+    
+    if (fallbackEnrichments.length > 0) {
+      logger.debug('Fallback Segments Created', {
+        count: fallbackEnrichments.length,
+        sampleFallbacks: fallbackEnrichments.slice(0, 3).map(e => ({
+          index: e.segmentIndex,
+          surface: e.classifiedSurface,
+          fallbackUsed: e.fallbackUsed,
+        })),
+      });
+    }
     
     const allEnrichments = [...matchedEnrichments, ...fallbackEnrichments]
       .sort((a, b) => a.segmentIndex - b.segmentIndex);
@@ -174,12 +226,23 @@ export async function enrichRouteWithOsm(
       fallbackSegments: fallbackEnrichments.length,
     };
     
+    logger.success('Route Enrichment Complete', {
+      totalEnrichments: allEnrichments.length,
+      osmAvailable: status.osmAvailable,
+      segmentsProcessed: status.segmentsProcessed,
+      segmentsWithOsmData: status.segmentsWithOsmData,
+      fallbackSegments: status.fallbackSegments,
+      matchRate: ((matchedEnrichments.length / points.length) * 100).toFixed(1) + '%',
+    });
+    
     return {
       enrichments: allEnrichments,
       status,
     };
     
   } catch (error) {
+    logger.error('Route Enrichment Failed', error instanceof Error ? error : new Error('Unknown error'));
+    
     return {
       enrichments: points.map((p, i) => 
         createFallbackSegment({ lat: p.latitude, lon: p.longitude, index: i })

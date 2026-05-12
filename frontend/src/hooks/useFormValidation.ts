@@ -16,13 +16,13 @@ const VALIDATION_RULES = {
   tireFront: {
     min: 1.5,
     max: 3.0,
-    required: true,
+    required: false,
     message: 'Front tire width must be between 1.5 and 3.0 inches',
   },
   tireRear: {
     min: 1.5,
     max: 3.0,
-    required: true,
+    required: false,
     message: 'Rear tire width must be between 1.5 and 3.0 inches',
   },
   bikeType: {
@@ -126,8 +126,6 @@ export function useFormValidation(initialValues: Partial<RiderInput & TerrainInp
     const requiredFields: (keyof (RiderInput & TerrainInput))[] = [
       'riderWeight',
       'bikeType',
-      'tireFront',
-      'tireRear',
       'tubeless',
       'ridingStyle',
       'skillLevel',

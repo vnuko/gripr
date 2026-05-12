@@ -1,5 +1,4 @@
-import type { TerrainComposition, TerrainScores, TerrainProfile } from '../terrain/terrain.types.js';
-import type { TerrainClassification } from '../terrain/terrain.types.js';
+import type { TerrainComposition, TerrainScores } from '../terrain/terrain.types.js';
 
 export interface PressureInput {
   riderWeight: number;

@@ -1,4 +1,4 @@
-import type { SurfaceType, OsmEnrichmentStatus, SegmentEnrichment } from '../osm/osm.types.js';
+import type { SurfaceType, OsmEnrichmentStatus } from '../osm/osm.types.js';
 
 export interface TerrainTimelineSegment {
   index: number;

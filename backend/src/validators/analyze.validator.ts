@@ -17,11 +17,12 @@ export const riderInputSchema = z.object({
 
   tireWidth: z.coerce
     .number({
-      required_error: 'Tire width is required',
       invalid_type_error: 'Tire width must be a number',
     })
     .min(1.5, 'Tire width must be at least 1.5 inches')
-    .max(3.0, 'Tire width must be at most 3.0 inches'),
+    .max(3.0, 'Tire width must be at most 3.0 inches')
+    .optional()
+    .default(2.4),
 
   tubeless: z.coerce
     .boolean({

@@ -7,7 +7,6 @@
  *       required:
  *         - riderWeight
  *         - bikeType
- *         - tireWidth
  *         - tubeless
  *         - ridingStyle
  *       properties:

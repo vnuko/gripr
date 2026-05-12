@@ -1,3 +1,4 @@
+import logger from '../../utils/logger.js';
 import type {
   OverpassResponse,
   OverpassQueryParams,
@@ -73,12 +74,53 @@ export function cacheResponse(cacheKey: string, data: OverpassResponse): void {
 export async function executeOverpassQuery(query: string): Promise<OverpassResponse> {
   const urls = [OSM_CONFIG.API_URL, OSM_CONFIG.BACKUP_API_URL];
   
+  logger.substep('Overpass Query', {
+    query: query.trim(),
+    primaryUrl: urls[0],
+    backupUrl: urls[1],
+    maxRetries: OSM_CONFIG.MAX_RETRIES,
+  });
+  
   for (let attempt = 0; attempt < OSM_CONFIG.MAX_RETRIES; attempt++) {
     for (const url of urls) {
+      const callStartTime = Date.now();
+      
       try {
+        logger.debug('Overpass API Call', {
+          attempt: attempt + 1,
+          url,
+          timeout: OSM_CONFIG.REQUEST_TIMEOUT_MS + ' ms',
+        });
+        
         const response = await fetchOverpass(url, query);
+        const callDuration = Date.now() - callStartTime;
+        
+        logger.success('Overpass Response', {
+          duration: callDuration + ' ms',
+          url,
+          elementCount: response.elements?.length ?? 0,
+          remark: response.remark,
+          sampleElements: response.elements?.slice(0, 3).map(el => ({
+            type: el.type,
+            id: el.id,
+            tags: el.tags ? {
+              highway: el.tags.highway,
+              surface: el.tags.surface,
+              smoothness: el.tags.smoothness,
+              mtbScale: el.tags.mtbScale,
+            } : null,
+          })),
+        });
+        
         return response;
       } catch (error) {
+        const callDuration = Date.now() - callStartTime;
+        logger.warn('Overpass API Failed', error instanceof Error ? error.message : 'Unknown error', {
+          attempt: attempt + 1,
+          url,
+          duration: callDuration + ' ms',
+        });
+        
         if (attempt === OSM_CONFIG.MAX_RETRIES - 1 && url === urls[urls.length - 1]) {
           throw new OsmClientError(
             `Overpass API failed after ${OSM_CONFIG.MAX_RETRIES} retries: ${error instanceof Error ? error.message : 'Unknown error'}`,
@@ -140,15 +182,28 @@ async function fetchOverpass(url: string, query: string): Promise<OverpassRespon
 export async function queryOsmWays(params: OverpassQueryParams): Promise<OverpassResponse> {
   const cacheKey = generateCacheKey(params);
   
+  logger.substep('OSM Query', {
+    bbox: params.bbox,
+    cacheKey,
+    cacheEnabled: OSM_CONFIG.CACHE_ENABLED,
+  });
+  
   const cached = getCachedResponse(cacheKey);
   if (cached) {
+    logger.success('OSM Cache Hit', {
+      cacheKey,
+      elementCount: cached.elements?.length ?? 0,
+    });
     return cached;
   }
+  
+  logger.debug('OSM Cache Miss', { cacheKey });
   
   const query = buildOverpassQuery(params);
   const response = await executeOverpassQuery(query);
   
   cacheResponse(cacheKey, response);
+  logger.debug('OSM Response Cached', { cacheKey });
   
   return response;
 }

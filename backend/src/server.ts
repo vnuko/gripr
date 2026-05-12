@@ -1,3 +1,4 @@
+import 'openai/shims/node';
 import { createApp } from './app.js';
 import { getEnvConfig } from './types/env.types.js';
 

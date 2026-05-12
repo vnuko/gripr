@@ -1,25 +1,24 @@
 import {
   Mountain,
   Droplets,
-  Zap,
   Route,
-  ChevronDown,
-  Layers,
-  Wind,
+  TrendingDown,
   Thermometer,
   CloudRain,
+  Car,
+  Trees,
+  TreePine,
 } from 'lucide-react';
 import { SegmentedControl } from '../ui/SegmentedControl';
 
 const TERRAIN_OPTIONS = [
-  { label: 'Rocky Terrain', icon: <Mountain size={12} /> },
-  { label: 'Wet Roots', icon: <Droplets size={12} /> },
-  { label: 'Fast Flow Trail', icon: <Zap size={12} /> },
-  { label: 'Long Gravel Ride', icon: <Route size={12} /> },
-  { label: 'Technical Descents', icon: <ChevronDown size={12} /> },
-  { label: 'Loose Corners', icon: <Wind size={12} /> },
-  { label: 'Muddy Conditions', icon: <Droplets size={12} /> },
-  { label: 'Dry Hardpack', icon: <Layers size={12} /> },
+  { label: 'Road / Paved Path', icon: <Car size={12} /> },
+  { label: 'Gravel / Dirt Roads', icon: <Route size={12} /> },
+  { label: 'Forest / Soil Trails', icon: <Trees size={12} /> },
+  { label: 'Muddy / Soft Ground', icon: <Droplets size={12} /> },
+  { label: 'Rocky / Stony Terrain', icon: <Mountain size={12} /> },
+  { label: 'Roots / Rough Trails', icon: <TreePine size={12} /> },
+  { label: 'Steep / Extreme Descents', icon: <TrendingDown size={12} /> },
 ];
 
 interface TerrainSectionProps {
@@ -233,11 +232,7 @@ export function TerrainSection({
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: 6,
-                    background: 'var(--gripr-surface-3)',
-                    border: '1px solid var(--gripr-border)',
-                    borderRadius: 8,
-                    padding: '4px 10px',
+                    gap: 6
                   }}
                 >
                   <Thermometer size={12} style={{ color: getTempColor(temperature) }} />

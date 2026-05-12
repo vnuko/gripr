@@ -1,4 +1,4 @@
-import type { SurfaceType, OsmEnrichmentStatus } from '../services/osm/osm.types.js';
+import type { OsmEnrichmentStatus } from '../services/osm/osm.types.js';
 
 export type BikeType = 'trail' | 'enduro' | 'xc' | 'downhill' | 'gravel';
 

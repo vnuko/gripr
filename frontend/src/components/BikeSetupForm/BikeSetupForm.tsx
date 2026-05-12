@@ -33,12 +33,12 @@ function GriprSwitch({ checked, onChange, disabled = false }: { checked: boolean
   );
 }
 
-const BIKE_TYPE_LABELS: Record<string, string> = {
-  xc: 'XC — Cross Country',
-  trail: 'Trail',
-  enduro: 'Enduro',
-  downhill: 'Downhill',
-  gravel: 'Gravel',
+const BIKE_TYPE_TIRE_DEFAULTS: Record<string, { front: number; rear: number }> = {
+  xc: { front: 2.2, rear: 2.2 },
+  trail: { front: 2.4, rear: 2.4 },
+  enduro: { front: 2.5, rear: 2.5 },
+  downhill: { front: 2.5, rear: 2.5 },
+  gravel: { front: 1.77, rear: 1.77 },
 };
 
 export function BikeSetupForm({
@@ -56,6 +56,8 @@ export function BikeSetupForm({
   onTireInsertsChange,
   disabled = false,
 }: BikeSetupFormProps) {
+  const defaultTireWidth = BIKE_TYPE_TIRE_DEFAULTS[bikeType]?.front ?? 2.4;
+
   return (
     <div className="gripr-card">
       <div className="gripr-card-header">
@@ -75,7 +77,10 @@ export function BikeSetupForm({
       <div className="gripr-card-body">
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem' }}>
           <div className="gripr-form-group" style={{ marginBottom: 0 }}>
-            <label className="gripr-label">Bike Type</label>
+            <label className="gripr-label">
+              Bike Type
+              <span style={{ color: 'rgb(255, 140, 85)', marginLeft: 4, fontWeight: 600 }}>*</span>
+            </label>
             <select
               className="gripr-select"
               value={bikeType || ''}
@@ -111,7 +116,7 @@ export function BikeSetupForm({
                 className="gripr-input"
                 value={tireFront || ''}
                 onChange={(e) => onTireFrontChange(Number(e.target.value))}
-                placeholder="2.4"
+                placeholder={defaultTireWidth.toString()}
                 min={1.8}
                 max={3.0}
                 step={0.05}
@@ -130,7 +135,7 @@ export function BikeSetupForm({
                 className="gripr-input"
                 value={tireRear || ''}
                 onChange={(e) => onTireRearChange(Number(e.target.value))}
-                placeholder="2.4"
+                placeholder={defaultTireWidth.toString()}
                 min={1.8}
                 max={3.0}
                 step={0.05}
@@ -147,7 +152,7 @@ export function BikeSetupForm({
             <div>
               <div className="gripr-toggle-label">Tubeless Setup</div>
               <div className="gripr-toggle-desc">
-                {tubeless ? 'Lower pressures available — sealant protection active' : 'Tube-type — minimum pressures apply'}
+                {tubeless ? 'Tubeless setup allows lower pressures with added puncture protection' : 'Tube setup requires slightly higher minimum pressures'}
               </div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -162,7 +167,7 @@ export function BikeSetupForm({
             <div>
               <div className="gripr-toggle-label">Tire Inserts</div>
               <div className="gripr-toggle-desc">
-                {tireInserts ? 'Cush-Core / Rimpact — protection optimised' : 'No inserts — standard pressure range'}
+                {tireInserts ? 'Tire inserts allow lower pressures with added rim protection' : 'No tire inserts, standard pressure recommendations apply'}
               </div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>

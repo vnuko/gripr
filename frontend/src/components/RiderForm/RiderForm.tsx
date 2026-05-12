@@ -56,7 +56,10 @@ export function RiderForm({
       <div className="gripr-card-body">
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem' }}>
           <div className="gripr-form-group" style={{ marginBottom: 0 }}>
-            <label className="gripr-label">Rider Weight</label>
+            <label className="gripr-label">
+              Rider Weight
+              <span style={{ color: 'rgb(255, 140, 85)', marginLeft: 4, fontWeight: 600 }}>*</span>
+            </label>
             <div className="gripr-input-wrap">
               <input
                 type="number"

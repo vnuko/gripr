@@ -15,7 +15,7 @@ export function Footer() {
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ color: 'var(--gripr-accent)', fontFamily: 'var(--gripr-font-display)', fontWeight: 700 }}>
-              GripIQ
+              GripR
             </span>
             <span>·</span>
             <span>AI MTB Tire Intelligence</span>

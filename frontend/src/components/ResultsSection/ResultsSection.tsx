@@ -16,6 +16,19 @@ function ResultCard({
   icon: ReactNode;
   delay?: number;
 }) {
+  const getNoteDescription = () => {
+    if (featured) {
+      return 'Optimised pressure fine-tuned by AI for your specific terrain, setup, and conditions.';
+    }
+    if (type === 'Baseline Pressure') {
+      return 'Standard starting point based on rider weight and bike type.';
+    }
+    if (type === 'Terrain Adjusted') {
+      return 'Pressure adjusted for your selected terrain composition.';
+    }
+    return result.note;
+  };
+
   return (
     <div
       className={`gripr-result-card gripr-animate-in ${featured ? 'featured' : ''}`}
@@ -95,7 +108,7 @@ function ResultCard({
         </div>
       </div>
 
-      <div className="gripr-result-note">{result.note}</div>
+      <div className="gripr-result-note">{getNoteDescription()}</div>
     </div>
   );
 }

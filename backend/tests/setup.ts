@@ -1,3 +1,4 @@
+import 'openai/shims/node';
 import { config } from 'dotenv';
 
 config({ path: '.env.test' });

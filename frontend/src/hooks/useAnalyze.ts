@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import type { AnalyzeResponse } from '../api/generated.js';
-import { analyzeRoute, computeMockRecommendations } from '../api/client.js';
+import { analyzeRoute, analyzeTerrain } from '../api/client.js';
 import type { AnalyzeRequest } from '../api/generated.js';
 
 type AnalyzeStatus = 'idle' | 'loading' | 'success' | 'error';
@@ -32,8 +32,7 @@ export function useAnalyze(): UseAnalyzeResult {
       if (file) {
         response = await analyzeRoute(file, riderInput);
       } else {
-        response = computeMockRecommendations(riderInput);
-        await new Promise((r) => setTimeout(r, 1500));
+        response = await analyzeTerrain(riderInput);
       }
       
       setResult(response);

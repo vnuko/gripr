@@ -9,12 +9,12 @@ export type WeatherCondition = 'dry' | 'damp' | 'wet';
 export interface RiderInput {
   riderWeight: number;
   bikeType: BikeType;
-  tireWidth: number;
+  tireWidth?: number;
   tubeless: boolean;
   ridingStyle: RidingStyle;
   skillLevel: SkillLevel;
-  tireFront: number;
-  tireRear: number;
+  tireFront?: number;
+  tireRear?: number;
   wheelSize: string;
   tireInserts: boolean;
 }
