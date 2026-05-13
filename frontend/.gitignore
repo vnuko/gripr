@@ -25,6 +25,3 @@ npm-debug.log*
 
 # Test coverage
 coverage/
-
-# Generated API types (regenerate from backend)
-src/api/generated.ts
