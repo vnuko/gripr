@@ -15,9 +15,10 @@ export function createApp(): express.Application {
   const app = express();
   const envConfig = getEnvConfig();
 
-  if (envConfig.NODE_ENV === 'development') {
-    app.use(cors());
-  }
+  app.use(cors({
+    origin: envConfig.CORS_ORIGINS,
+    credentials: true,
+  }));
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
