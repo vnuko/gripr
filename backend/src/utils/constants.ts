@@ -113,7 +113,7 @@ export const OSM_SMOOTHNESS_MAPPING: Record<string, { surface: SurfaceType; roug
 
 export const OSM_CONFIG = {
   API_URL: 'https://overpass-api.de/api/interpreter',
-  BACKUP_API_URL: 'https://overpass.kumi.wegs/api/interpreter',
+  BACKUP_API_URL: 'https://overpass.kumi.systems/api/interpreter',
   REQUEST_TIMEOUT_MS: 10000,
   MAX_RETRIES: 3,
   RETRY_DELAY_MS: 1000,

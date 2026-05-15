@@ -24,22 +24,14 @@ export class OsmClientError extends Error {
 export function buildOverpassQuery(params: OverpassQueryParams): string {
   const { south, west, north, east } = params.bbox;
   
-  const query = `
-    [out:json][timeout:${OSM_CONFIG.REQUEST_TIMEOUT_MS / 1000}];
-    way["highway"](${south},${west},${north},${east});
-    out geom;
-  `;
+  const query = `[out:json][timeout:${OSM_CONFIG.REQUEST_TIMEOUT_MS / 1000}];way["highway"](${south},${west},${north},${east});out geom;`;
   
   return query;
 }
 
 export function buildWayIdsQuery(wayIds: number[]): string {
   const ids = wayIds.join(',');
-  return `
-    [out:json][timeout:${OSM_CONFIG.REQUEST_TIMEOUT_MS / 1000}];
-    way(id:${ids});
-    out geom;
-  `;
+  return `[out:json][timeout:${OSM_CONFIG.REQUEST_TIMEOUT_MS / 1000}];way(id:${ids});out geom;`;
 }
 
 export function generateCacheKey(params: OverpassQueryParams): string {

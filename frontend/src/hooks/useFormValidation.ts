@@ -86,7 +86,7 @@ export function useFormValidation(initialValues: Partial<RiderInput & TerrainInp
   }, []);
 
   const setValue = useCallback(
-    (field: keyof (RiderInput & TerrainInput), value: string | number | boolean | string[]) => {
+    (field: keyof (RiderInput & TerrainInput), value: string | number | boolean | string[] | undefined) => {
       setValues((prev) => ({ ...prev, [field]: value }));
 
       const error = validateField(field, value);

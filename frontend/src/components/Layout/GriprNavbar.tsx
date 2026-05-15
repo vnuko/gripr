@@ -1,4 +1,4 @@
-import { Sun, Moon, Bike } from 'lucide-react';
+import { Sun, Moon } from 'lucide-react';
 
 interface GriprNavbarProps {
   isDark: boolean;

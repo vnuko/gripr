@@ -1,4 +1,4 @@
-import { Github, Instagram, Twitter } from 'lucide-react';
+import { Github, Instagram } from 'lucide-react';
 
 export function Footer() {
   return (

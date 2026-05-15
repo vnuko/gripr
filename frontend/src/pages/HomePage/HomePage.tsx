@@ -507,7 +507,7 @@ export function HomePage() {
               tireFrontError={errors.tireFront}
               onTireFrontChange={(v: number | undefined) => setValue('tireFront', v)}
               tireRear={values.tireRear as number | undefined}
-              tireRearError={errors.tireRear}
+              tireRearError={errors.tireRear} 
               onTireRearChange={(v: number | undefined) => setValue('tireRear', v)}
               wheelSize={values.wheelSize as string}
               onWheelSizeChange={(v: string) => setValue('wheelSize', v)}
