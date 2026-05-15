@@ -21,7 +21,7 @@ export function HeroSection() {
         <div className="gripr-hero-content gripr-animate-in">
           <div className="gripr-hero-badge">
             <Sparkles size={11} />
-            AI-Powered MTB Intelligence
+            AI-Powered
           </div>
           <h1>
             AI Tire Pressure<br />
@@ -29,30 +29,9 @@ export function HeroSection() {
             for MTB Trails
           </h1>
           <p>
-            Upload your GPX route and get intelligent, terrain-aware pressure
-            recommendations for maximum grip, comfort, and speed.
+            Select multiple terrain types or Upload your GPX route and get intelligent, terrain-aware pressure
+            recommendations for maximum grip and speed.
           </p>
-
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: '1.5rem' }}>
-            {['Rocky Terrain', 'Technical Descents', 'Wet Roots', 'Fast Flow Trails'].map((tag) => (
-              <span
-                key={tag}
-                style={{
-                  background: 'rgba(255,255,255,0.1)',
-                  backdropFilter: 'blur(8px)',
-                  border: '1px solid rgba(255,255,255,0.2)',
-                  color: 'rgba(255,255,255,0.85)',
-                  borderRadius: 50,
-                  padding: '4px 13px',
-                  fontSize: '0.78rem',
-                  fontWeight: 600,
-                  fontFamily: 'var(--gripr-font-display)',
-                }}
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
         </div>
       </div>
 

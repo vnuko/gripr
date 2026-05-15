@@ -6,14 +6,16 @@ interface GriprNavbarProps {
 }
 
 export function GriprNavbar({ isDark, onToggleTheme }: GriprNavbarProps) {
+  const scrollToContent = () => {
+    const el = document.getElementById('gripr-content');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <nav className="gripr-navbar">
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 1.5rem' }}>
         <div style={{ height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div className="gripr-logo-icon">
-              <Bike size={18} strokeWidth={2.2} />
-            </div>
             <span className="gripr-logo-text">
               Grip<span>R</span>
             </span>
@@ -37,20 +39,22 @@ export function GriprNavbar({ isDark, onToggleTheme }: GriprNavbarProps) {
 
           <div style={{ display: 'flex', gap: '1.75rem', alignItems: 'center' }}>
             {['Analyze', 'How It Works', 'About'].map((item) => (
-              <a
+              <button
                 key={item}
-                href="#"
+                onClick={item === 'Analyze' ? scrollToContent : undefined}
                 style={{
                   fontSize: '0.85rem',
                   fontWeight: 600,
                   color: 'var(--gripr-text-secondary)',
-                  textDecoration: 'none',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
                   fontFamily: 'var(--gripr-font-display)',
                   transition: 'color 0.2s',
                 }}
               >
                 {item}
-              </a>
+              </button>
             ))}
           </div>
 

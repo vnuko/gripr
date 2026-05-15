@@ -1,4 +1,4 @@
-import { Github, Twitter } from 'lucide-react';
+import { Github, Instagram, Twitter } from 'lucide-react';
 
 export function Footer() {
   return (
@@ -18,14 +18,15 @@ export function Footer() {
               GripR
             </span>
             <span>·</span>
-            <span>AI MTB Tire Intelligence</span>
+            <span>AI Powered</span>
             <span>·</span>
-            <span>MVP · MTB Only</span>
+            <span>MVP</span>
+            <span>·</span>
+            <span>MTB & Gravel Only</span>
           </div>
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-            <span>Future: Gravel · Road</span>
-            <a href="#" style={{ color: 'var(--gripr-text-muted)' }}><Github size={15} /></a>
-            <a href="#" style={{ color: 'var(--gripr-text-muted)' }}><Twitter size={15} /></a>
+            <a href="https://github.com/vnuko/gripr" style={{ color: 'var(--gripr-text-muted)' }}><Github size={15} /></a>
+            <a href="#" style={{ color: 'var(--gripr-text-muted)' }}><Instagram size={15} /></a>
           </div>
         </div>
       </div>

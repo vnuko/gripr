@@ -84,6 +84,24 @@ function transformBackendResponse(
   };
 }
 
+function resolveTireWidth(
+  tireFront: number | undefined,
+  tireRear: number | undefined,
+  bikeType: string
+): number {
+  const BIKE_TYPE_DEFAULTS: Record<string, number> = {
+    xc: 2.2,
+    trail: 2.4,
+    enduro: 2.5,
+    downhill: 2.5,
+    gravel: 1.77,
+  };
+
+  if (tireFront !== undefined && !isNaN(tireFront) && tireFront > 0) return tireFront;
+  if (tireRear !== undefined && !isNaN(tireRear) && tireRear > 0) return tireRear;
+  return BIKE_TYPE_DEFAULTS[bikeType] ?? 2.4;
+}
+
 function mapTerrainsToPercentages(selectedTerrains: string[]): {
   asphalt?: number;
   gravel?: number;
@@ -122,7 +140,7 @@ export async function analyzeRoute(
   formData.append('file', file);
   formData.append('riderWeight', riderInput.riderWeight.toString());
   formData.append('bikeType', riderInput.bikeType);
-  formData.append('tireWidth', (riderInput.tireFront ?? 2.4).toString());
+  formData.append('tireWidth', resolveTireWidth(riderInput.tireFront, riderInput.tireRear, riderInput.bikeType).toString());
   formData.append('tubeless', riderInput.tubeless.toString());
   formData.append('ridingStyle', riderInput.ridingStyle);
 
@@ -148,7 +166,7 @@ export async function analyzeTerrain(
   const body = {
     riderWeight: riderInput.riderWeight,
     bikeType: riderInput.bikeType,
-    tireWidth: riderInput.tireFront ?? 2.4,
+    tireWidth: resolveTireWidth(riderInput.tireFront, riderInput.tireRear, riderInput.bikeType),
     tubeless: riderInput.tubeless,
     ridingStyle: riderInput.ridingStyle,
     manualTerrain,

@@ -17,12 +17,14 @@ const VALIDATION_RULES = {
     min: 1.5,
     max: 3.0,
     required: false,
+    validateWhenEmpty: false,
     message: 'Front tire width must be between 1.5 and 3.0 inches',
   },
   tireRear: {
     min: 1.5,
     max: 3.0,
     required: false,
+    validateWhenEmpty: false,
     message: 'Rear tire width must be between 1.5 and 3.0 inches',
   },
   bikeType: {
@@ -65,6 +67,9 @@ export function useFormValidation(initialValues: Partial<RiderInput & TerrainInp
     }
 
     if ('min' in rules && 'max' in rules && rules.min !== undefined && rules.max !== undefined) {
+      if (value === undefined || value === '' || value === null) {
+        return null;
+      }
       const numValue = Number(value);
       if (isNaN(numValue) || numValue < rules.min || numValue > rules.max) {
         return rules.message;

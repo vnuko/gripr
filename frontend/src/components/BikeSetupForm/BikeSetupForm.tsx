@@ -4,10 +4,13 @@ import { SegmentedControl } from '../ui/SegmentedControl';
 interface BikeSetupFormProps {
   bikeType: string;
   onBikeTypeChange: (v: string) => void;
-  tireFront: number;
-  onTireFrontChange: (v: number) => void;
-  tireRear: number;
-  onTireRearChange: (v: number) => void;
+  bikeTypeError?: string;
+  tireFront: number | undefined;
+  tireFrontError?: string;
+  onTireFrontChange: (v: number | undefined) => void;
+  tireRear: number | undefined;
+  tireRearError?: string;
+  onTireRearChange: (v: number | undefined) => void;
   wheelSize: string;
   onWheelSizeChange: (v: string) => void;
   tubeless: boolean;
@@ -44,9 +47,12 @@ const BIKE_TYPE_TIRE_DEFAULTS: Record<string, { front: number; rear: number }> =
 export function BikeSetupForm({
   bikeType,
   onBikeTypeChange,
+  bikeTypeError,
   tireFront,
+  tireFrontError,
   onTireFrontChange,
   tireRear,
+  tireRearError,
   onTireRearChange,
   wheelSize,
   onWheelSizeChange,
@@ -86,6 +92,7 @@ export function BikeSetupForm({
               value={bikeType || ''}
               onChange={(e) => onBikeTypeChange(e.target.value)}
               disabled={disabled}
+              style={{ borderColor: bikeTypeError ? '#dc3545' : undefined }}
             >
               <option value="" disabled>Please select</option>
               <option value="xc">XC — Cross Country</option>
@@ -94,6 +101,15 @@ export function BikeSetupForm({
               <option value="downhill">Downhill</option>
               <option value="gravel">Gravel</option>
             </select>
+            {bikeTypeError ? (
+              <div style={{ marginTop: '0.4rem', fontSize: '0.75rem', color: '#dc3545' }}>
+                {bikeTypeError}
+              </div>
+            ) : (
+              <div style={{ marginTop: '0.4rem', fontSize: '0.75rem', color: 'var(--gripr-text-muted)' }}>
+                Choose your bike type for optimal pressure recommendations
+              </div>
+            )}
           </div>
 
           <div className="gripr-form-group" style={{ marginBottom: 0 }}>
@@ -115,16 +131,25 @@ export function BikeSetupForm({
                 type="number"
                 className="gripr-input"
                 value={tireFront || ''}
-                onChange={(e) => onTireFrontChange(Number(e.target.value))}
+                onChange={(e) => onTireFrontChange(e.target.value === '' ? undefined : Number(e.target.value))}
                 placeholder={defaultTireWidth.toString()}
-                min={1.8}
+                min={1.5}
                 max={3.0}
                 step={0.05}
                 disabled={disabled}
-                style={{ paddingRight: '3.2rem' }}
+                style={{ paddingRight: '3.2rem', borderColor: tireFrontError ? '#dc3545' : undefined }}
               />
               <span className="gripr-input-unit">inches</span>
             </div>
+            {tireFrontError ? (
+              <div style={{ marginTop: '0.4rem', fontSize: '0.75rem', color: '#dc3545' }}>
+                {tireFrontError}
+              </div>
+            ) : (
+              <div style={{ marginTop: '0.4rem', fontSize: '0.75rem', color: 'var(--gripr-text-muted)' }}>
+                Optional — defaults based on bike type
+              </div>
+            )}
           </div>
 
           <div className="gripr-form-group" style={{ marginBottom: 0 }}>
@@ -134,16 +159,25 @@ export function BikeSetupForm({
                 type="number"
                 className="gripr-input"
                 value={tireRear || ''}
-                onChange={(e) => onTireRearChange(Number(e.target.value))}
+                onChange={(e) => onTireRearChange(e.target.value === '' ? undefined : Number(e.target.value))}
                 placeholder={defaultTireWidth.toString()}
-                min={1.8}
+                min={1.5}
                 max={3.0}
                 step={0.05}
                 disabled={disabled}
-                style={{ paddingRight: '3.2rem' }}
+                style={{ paddingRight: '3.2rem', borderColor: tireRearError ? '#dc3545' : undefined }}
               />
               <span className="gripr-input-unit">inches</span>
             </div>
+            {tireRearError ? (
+              <div style={{ marginTop: '0.4rem', fontSize: '0.75rem', color: '#dc3545' }}>
+                {tireRearError}
+              </div>
+            ) : (
+              <div style={{ marginTop: '0.4rem', fontSize: '0.75rem', color: 'var(--gripr-text-muted)' }}>
+                Optional — defaults based on bike type
+              </div>
+            )}
           </div>
         </div>
 

@@ -494,6 +494,7 @@ export function HomePage() {
 
             <BikeSetupForm
               bikeType={values.bikeType as string}
+              bikeTypeError={errors.bikeType}
               onBikeTypeChange={(v: string) => {
                 setValue('bikeType', v);
                 const defaults = BIKE_TYPE_TIRE_DEFAULTS[v];
@@ -502,10 +503,12 @@ export function HomePage() {
                   setValue('tireRear', defaults.rear);
                 }
               }}
-              tireFront={values.tireFront as number}
-              onTireFrontChange={(v: number) => setValue('tireFront', v)}
-              tireRear={values.tireRear as number}
-              onTireRearChange={(v: number) => setValue('tireRear', v)}
+              tireFront={values.tireFront as number | undefined}
+              tireFrontError={errors.tireFront}
+              onTireFrontChange={(v: number | undefined) => setValue('tireFront', v)}
+              tireRear={values.tireRear as number | undefined}
+              tireRearError={errors.tireRear}
+              onTireRearChange={(v: number | undefined) => setValue('tireRear', v)}
               wheelSize={values.wheelSize as string}
               onWheelSizeChange={(v: string) => setValue('wheelSize', v)}
               tubeless={values.tubeless as boolean}
