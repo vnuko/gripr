@@ -101,7 +101,8 @@ export function calculateRoughnessScore(
   let weightedRoughness = 0;
   
   for (const segment of segments) {
-    const enrichment = enrichments[segment.index];
+    const enrichmentIndex = segment.representativeEnrichmentIndex ?? segment.index;
+    const enrichment = enrichments[enrichmentIndex];
     if (!enrichment) continue;
     
     let surfaceRoughness = 0.3;

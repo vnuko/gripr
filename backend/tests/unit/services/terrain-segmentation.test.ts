@@ -151,6 +151,34 @@ describe('Terrain Segmentation Service', () => {
       expect(segments.length).toBeGreaterThan(0);
       expect(segments.every(s => s.distance > 0)).toBe(true);
     });
+
+    it('should choose representative surface from enrichments inside segment range', () => {
+      const points: ParsedTrackPoint[] = Array.from({ length: 12 }, (_, i) => ({
+        latitude: 47.3769 + i * 0.00005,
+        longitude: 8.5417,
+        elevation: 450,
+        timestamp: null,
+      }));
+
+      const enrichments: SegmentEnrichment[] = points.map((p, i) => ({
+        segmentIndex: i,
+        startLat: p.latitude,
+        startLon: p.longitude,
+        endLat: p.latitude,
+        endLon: p.longitude,
+        distance: 0,
+        classifiedSurface: i === 0 ? 'asphalt' : 'dirt',
+        osmTags: {},
+        confidence: 'high',
+        fallbackUsed: false,
+      }));
+
+      const segments = segmentRoute(points, enrichments);
+
+      expect(segments.length).toBeGreaterThan(0);
+      expect(segments[0]?.surface).toBe('dirt');
+      expect(segments[0]?.representativeEnrichmentIndex).toBeGreaterThan(0);
+    });
   });
 
   describe('getTerrainTimelineSummary', () => {

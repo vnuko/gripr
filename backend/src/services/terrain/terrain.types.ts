@@ -9,6 +9,9 @@ export interface TerrainTimelineSegment {
   gradient: number;
   confidence: 'high' | 'medium' | 'low';
   fallbackUsed: boolean;
+  enrichmentStartIndex?: number;
+  enrichmentEndIndex?: number;
+  representativeEnrichmentIndex?: number;
 }
 
 export interface TerrainComposition {

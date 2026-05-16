@@ -82,15 +82,18 @@ export function createTerrainSegment(
   startPoint: { lat: number; lon: number; elevation: number | null },
   endPoint: { lat: number; lon: number; elevation: number | null },
   distance: number,
-  index: number
+  index: number,
+  enrichmentStartIndex?: number,
+  enrichmentEndIndex?: number,
+  representativeEnrichmentIndex?: number
 ): TerrainTimelineSegment {
   const gradient = calculateSegmentGradient(
     startPoint.elevation,
     endPoint.elevation,
     distance
   );
-  
-  return {
+
+  const segment: TerrainTimelineSegment = {
     index,
     startPoint,
     endPoint,
@@ -99,6 +102,110 @@ export function createTerrainSegment(
     gradient,
     confidence: enrichment.confidence,
     fallbackUsed: enrichment.fallbackUsed,
+  };
+
+  if (enrichmentStartIndex !== undefined) {
+    segment.enrichmentStartIndex = enrichmentStartIndex;
+  }
+  if (enrichmentEndIndex !== undefined) {
+    segment.enrichmentEndIndex = enrichmentEndIndex;
+  }
+  if (representativeEnrichmentIndex !== undefined) {
+    segment.representativeEnrichmentIndex = representativeEnrichmentIndex;
+  }
+
+  return segment;
+}
+
+function pickRepresentativeEnrichment(
+  enrichments: SegmentEnrichment[],
+  startIndex: number,
+  endIndex: number
+): { enrichment: SegmentEnrichment; representativeIndex: number } | null {
+  const clampedStart = Math.max(0, startIndex);
+  const clampedEnd = Math.min(endIndex, enrichments.length - 1);
+
+  if (clampedStart > clampedEnd || enrichments.length === 0) {
+    return null;
+  }
+
+  const confidenceRank: Record<'high' | 'medium' | 'low', number> = {
+    high: 3,
+    medium: 2,
+    low: 1,
+  };
+
+  const stats = new Map<SurfaceType, {
+    total: number;
+    highConfidence: number;
+    fallbackCount: number;
+    firstIndex: number;
+  }>();
+
+  for (let i = clampedStart; i <= clampedEnd; i++) {
+    const enrichment = enrichments[i];
+    if (!enrichment) continue;
+
+    const key = enrichment.classifiedSurface;
+    const current = stats.get(key);
+    if (current) {
+      current.total += 1;
+      if (enrichment.confidence === 'high') current.highConfidence += 1;
+      if (enrichment.fallbackUsed) current.fallbackCount += 1;
+    } else {
+      stats.set(key, {
+        total: 1,
+        highConfidence: enrichment.confidence === 'high' ? 1 : 0,
+        fallbackCount: enrichment.fallbackUsed ? 1 : 0,
+        firstIndex: i,
+      });
+    }
+  }
+
+  if (stats.size === 0) {
+    return null;
+  }
+
+  const orderedSurfaces = Array.from(stats.entries()).sort((a, b) => {
+    const aValue = a[1];
+    const bValue = b[1];
+
+    if (bValue.total !== aValue.total) return bValue.total - aValue.total;
+    if (bValue.highConfidence !== aValue.highConfidence) return bValue.highConfidence - aValue.highConfidence;
+    if (aValue.fallbackCount !== bValue.fallbackCount) return aValue.fallbackCount - bValue.fallbackCount;
+
+    return aValue.firstIndex - bValue.firstIndex;
+  });
+
+  const winner = orderedSurfaces[0];
+  if (!winner) {
+    return null;
+  }
+
+  const winningSurface = winner[0];
+  const preferredInRange = Array.from({ length: clampedEnd - clampedStart + 1 }, (_, offset) => clampedStart + offset)
+    .map((idx) => ({ idx, enrichment: enrichments[idx] }))
+    .filter(({ enrichment }) => enrichment?.classifiedSurface === winningSurface);
+
+  const bestCandidate = preferredInRange.sort((a, b) => {
+    const aRank = confidenceRank[a.enrichment?.confidence ?? 'low'];
+    const bRank = confidenceRank[b.enrichment?.confidence ?? 'low'];
+    if (bRank !== aRank) return bRank - aRank;
+
+    const aFallback = a.enrichment?.fallbackUsed ? 1 : 0;
+    const bFallback = b.enrichment?.fallbackUsed ? 1 : 0;
+    if (aFallback !== bFallback) return aFallback - bFallback;
+
+    return a.idx - b.idx;
+  })[0];
+
+  if (!bestCandidate?.enrichment) {
+    return null;
+  }
+
+  return {
+    enrichment: bestCandidate.enrichment,
+    representativeIndex: bestCandidate.idx,
   };
 }
 
@@ -135,7 +242,10 @@ export function segmentRoute(
             { lat: start.latitude, lon: start.longitude, elevation: start.elevation },
             { lat: end.latitude, lon: end.longitude, elevation: end.elevation },
             totalDistance,
-            segmentIndex
+            segmentIndex,
+            currentIndex,
+            points.length - 1,
+            currentIndex
           ));
         }
       }
@@ -161,15 +271,23 @@ export function segmentRoute(
         }
       }
       
-      const enrichment = enrichments[currentIndex] ?? enrichments[0];
+      const selected = pickRepresentativeEnrichment(enrichments, currentIndex, endIndex)
+        ?? (enrichments[currentIndex]
+          ? { enrichment: enrichments[currentIndex] as SegmentEnrichment, representativeIndex: currentIndex }
+          : enrichments[0]
+            ? { enrichment: enrichments[0] as SegmentEnrichment, representativeIndex: 0 }
+            : null);
       
-      if (enrichment) {
+      if (selected) {
         segments.push(createTerrainSegment(
-          enrichment,
+          selected.enrichment,
           { lat: startPoint.latitude, lon: startPoint.longitude, elevation: startPoint.elevation },
           { lat: endPoint.latitude, lon: endPoint.longitude, elevation: endPoint.elevation },
           segmentDistance,
-          segmentIndex
+          segmentIndex,
+          currentIndex,
+          endIndex,
+          selected.representativeIndex
         ));
         
         segmentIndex++;
