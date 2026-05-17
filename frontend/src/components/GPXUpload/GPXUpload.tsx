@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
-import { UploadCloud, FileText, X, MapPin, TrendingUp, Mountain } from 'lucide-react';
+import { UploadCloud, FileText, X } from 'lucide-react';
 
 interface GPXUploadProps {
   file: File | null;
