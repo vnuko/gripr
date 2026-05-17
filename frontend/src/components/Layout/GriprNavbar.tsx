@@ -6,10 +6,10 @@ interface GriprNavbarProps {
 }
 
 export function GriprNavbar({ isDark, onToggleTheme }: GriprNavbarProps) {
-  const scrollToContent = () => {
-    const el = document.getElementById('gripr-content');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-  };
+  // const scrollToContent = () => {
+  //   const el = document.getElementById('gripr-content');
+  //   if (el) el.scrollIntoView({ behavior: 'smooth' });
+  // };
 
   return (
     <nav className="gripr-navbar">
