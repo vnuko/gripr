@@ -79,7 +79,7 @@ export function GPXUpload({ file, onChange, disabled = false }: GPXUploadProps) 
           )}
         </div>
 
-        <div style={{ marginTop: '1rem' }}>
+        {/* <div style={{ marginTop: '1rem' }}>
           <div
             className="gripr-gpx-map"
             style={{
@@ -168,7 +168,7 @@ export function GPXUpload({ file, onChange, disabled = false }: GPXUploadProps) 
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
       </div>
     );
   }

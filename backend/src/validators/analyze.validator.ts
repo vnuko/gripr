@@ -24,11 +24,17 @@ export const riderInputSchema = z.object({
     .optional()
     .default(2.4),
 
-  tubeless: z.coerce
-    .boolean({
+  tubeless: z.preprocess(
+    (val) => {
+      if (typeof val === 'boolean') return val;
+      if (typeof val === 'string') return val === 'true';
+      return false;
+    },
+    z.boolean({
       required_error: 'Tubeless option is required',
       invalid_type_error: 'Tubeless must be true or false',
-    }),
+    })
+  ),
 
   ridingStyle: z.enum(['conservative', 'moderate', 'aggressive'], {
     required_error: 'Riding style is required',

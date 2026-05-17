@@ -1,6 +1,7 @@
 import { CheckCircle, Cpu, TrendingDown } from 'lucide-react';
 import type { ReactNode } from 'react';
 import type { PressureResult } from '../../api/generated';
+import { psiToBar } from '../../utils/pressure.js';
 import { PressureGauge } from './PressureGauge.js';
 
 function ResultCard({
@@ -75,18 +76,50 @@ function ResultCard({
       </div>
 
       <div className="gripr-result-body">
-        <div className="gripr-psi-row">
-          <PressureGauge
-            value={result.front}
-            label="Front"
-            featured={featured}
-          />
-          <div className="gripr-psi-divider" />
-          <PressureGauge
-            value={result.rear}
-            label="Rear"
-            featured={featured}
-          />
+        <div className="gripr-tire-section">
+          <div className="gripr-tire-title">Front Tire</div>
+          <div className="gripr-gauge-row">
+            <PressureGauge
+              value={result.front}
+              featured={featured}
+              unit="PSI"
+              variant="primary"
+              size={100}
+              showLabel={false}
+            />
+            <div className="gripr-gauge-divider" />
+            <PressureGauge
+              value={psiToBar(result.front)}
+              featured={featured}
+              unit="BAR"
+              variant="secondary"
+              size={80}
+              showLabel={false}
+            />
+          </div>
+        </div>
+        
+        <div className="gripr-tire-section">
+          <div className="gripr-tire-title">Rear Tire</div>
+          <div className="gripr-gauge-row">
+            <PressureGauge
+              value={result.rear}
+              featured={featured}
+              unit="PSI"
+              variant="primary"
+              size={100}
+              showLabel={false}
+            />
+            <div className="gripr-gauge-divider" />
+            <PressureGauge
+              value={psiToBar(result.rear)}
+              featured={featured}
+              unit="BAR"
+              variant="secondary"
+              size={80}
+              showLabel={false}
+            />
+          </div>
         </div>
 
         <div style={{ marginTop: '0.75rem' }}>
@@ -176,7 +209,7 @@ export function ResultsSection({
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
           gap: '1.25rem',
         }}
       >
@@ -207,12 +240,10 @@ export function ResultsSection({
       >
         <div className="gripr-stats-bar">
           {[
-            { value: `${aiRecommended.front} PSI`, label: 'Front Recommended' },
-            { value: `${aiRecommended.rear} PSI`, label: 'Rear Recommended' },
-            {
-              value: `${((baseline.front - aiRecommended.front + baseline.rear - aiRecommended.rear) / 2).toFixed(1)} PSI`,
-              label: 'Avg Reduction',
-            },
+            { value: `${aiRecommended.front} PSI`, label: 'Front PSI' },
+            { value: `${psiToBar(aiRecommended.front).toFixed(2)} BAR`, label: 'Front BAR' },
+            { value: `${aiRecommended.rear} PSI`, label: 'Rear PSI' },
+            { value: `${psiToBar(aiRecommended.rear).toFixed(2)} BAR`, label: 'Rear BAR' },
             { value: `${aiRecommended.confidence}%`, label: 'AI Confidence' },
           ].map(({ value, label }) => (
             <div key={label} className="gripr-stat-item">
