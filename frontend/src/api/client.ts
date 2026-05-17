@@ -143,6 +143,7 @@ export async function analyzeRoute(
   formData.append('tireWidth', resolveTireWidth(riderInput.tireFront, riderInput.tireRear, riderInput.bikeType).toString());
   formData.append('tubeless', riderInput.tubeless.toString());
   formData.append('ridingStyle', riderInput.ridingStyle);
+  formData.append('skillLevel', riderInput.skillLevel);
 
   const response = await fetch(`${API_BASE_URL}/api/analyze`, {
     method: 'POST',
@@ -169,6 +170,7 @@ export async function analyzeTerrain(
     tireWidth: resolveTireWidth(riderInput.tireFront, riderInput.tireRear, riderInput.bikeType),
     tubeless: riderInput.tubeless,
     ridingStyle: riderInput.ridingStyle,
+    skillLevel: riderInput.skillLevel,
     manualTerrain,
   };
 

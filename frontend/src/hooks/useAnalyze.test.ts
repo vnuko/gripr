@@ -2,7 +2,16 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 
 vi.mock('../../src/api/client.js', () => ({
-  analyzeRoute: vi.fn(),
+  analyzeRoute: vi.fn().mockResolvedValue({
+    baseline: { front: 22, rear: 25, confidence: 47, note: 'test' },
+    terrainAdjusted: { front: 20, rear: 23, confidence: 62, note: 'test' },
+    aiRecommended: { front: 21, rear: 24, confidence: 85, note: 'test' },
+  }),
+  analyzeTerrain: vi.fn().mockResolvedValue({
+    baseline: { front: 22, rear: 25, confidence: 47, note: 'test' },
+    terrainAdjusted: { front: 20, rear: 23, confidence: 62, note: 'test' },
+    aiRecommended: { front: 21, rear: 24, confidence: 85, note: 'test' },
+  }),
   computeMockRecommendations: vi.fn().mockResolvedValue({
     baseline: { front: 22, rear: 25, confidence: 47, note: 'test' },
     terrainAdjusted: { front: 20, rear: 23, confidence: 62, note: 'test' },

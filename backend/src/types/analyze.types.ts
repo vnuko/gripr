@@ -4,6 +4,8 @@ export type BikeType = 'trail' | 'enduro' | 'xc' | 'downhill' | 'gravel';
 
 export type RidingStyle = 'conservative' | 'moderate' | 'aggressive';
 
+export type SkillLevel = 'beginner' | 'intermediate' | 'advanced' | 'expert';
+
 export type DifficultyRating = 'easy' | 'moderate' | 'hard' | 'expert';
 
 export type InputMode = 'gpx' | 'manual';
@@ -42,6 +44,7 @@ export interface RiderInput {
   tireWidth: number;
   tubeless: boolean;
   ridingStyle: RidingStyle;
+  skillLevel: SkillLevel;
 }
 
 export interface RiderInputV2 extends RiderInput {

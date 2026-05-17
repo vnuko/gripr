@@ -138,6 +138,8 @@ async function fetchOverpass(url: string, query: string): Promise<OverpassRespon
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
+        'User-Agent': 'GripR/0.1 (https://github.com/vnuko/gripr)',
+        'Accept': 'application/json',
       },
       body: `data=${encodeURIComponent(query)}`,
       signal: controller.signal,

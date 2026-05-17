@@ -71,6 +71,7 @@ You are an expert mountain bike tire pressure advisor. Analyze the following rid
 - Tire Width: ${context.tireWidth} inches
 - Tubeless: ${context.tubeless ? 'Yes' : 'No'}
 - Riding Style: ${context.ridingStyle}
+- Skill Level: ${context.skillLevel}
 
 ## Terrain Analysis (${inputModeDescription})
 ${terrainDescription}
@@ -84,20 +85,20 @@ ${terrainDescription}
    - Terrain composition percentages
    - Roughness and technicality scores
    - Rider weight and tire width relationship
-   - Riding style and bike type
+   - Riding style, skill level, and bike type
 2. Recommend final pressures (±1-2 PSI from calculated values allowed)
-3. Explain your reasoning focusing on terrain considerations
+3. Explain your reasoning focusing on terrain considerations and rider skill
 
 ## Output Format
 Respond in JSON format:
 {
   "frontPsi": number,
   "rearPsi": number,
-  "reasoning": "string explaining terrain-based reasoning",
+  "reasoning": "string explaining terrain-based reasoning and skill considerations",
   "confidence": "high" | "medium" | "low"
 }
 
-IMPORTANT: Do NOT override the physics-based calculation completely. Only refine within ±2 PSI based on terrain nuances.
+IMPORTANT: Do NOT override the physics-based calculation completely. Only refine within ±2 PSI based on terrain nuances and rider skill level.
 `;
 }
 

@@ -34,6 +34,11 @@ export const riderInputSchema = z.object({
     required_error: 'Riding style is required',
     invalid_type_error: 'Invalid riding style',
   }),
+
+  skillLevel: z.enum(['beginner', 'intermediate', 'advanced', 'expert'], {
+    required_error: 'Skill level is required',
+    invalid_type_error: 'Invalid skill level',
+  }),
 });
 
 export const riderInputV2Schema = riderInputSchema.extend({

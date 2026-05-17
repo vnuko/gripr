@@ -37,7 +37,7 @@ export function GriprNavbar({ isDark, onToggleTheme }: GriprNavbarProps) {
             </span>
           </div>
 
-          <div style={{ display: 'flex', gap: '1.75rem', alignItems: 'center' }}>
+          {/* <div style={{ display: 'flex', gap: '1.75rem', alignItems: 'center' }}>
             {['Analyze', 'How It Works', 'About'].map((item) => (
               <button
                 key={item}
@@ -56,7 +56,7 @@ export function GriprNavbar({ isDark, onToggleTheme }: GriprNavbarProps) {
                 {item}
               </button>
             ))}
-          </div>
+          </div> */}
 
           <div className="gripr-theme-toggle" role="group" aria-label="Toggle theme">
             <button

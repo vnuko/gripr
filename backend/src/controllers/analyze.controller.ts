@@ -36,6 +36,7 @@ export async function analyzeHandlerV2(
       tireWidth: req.body.tireWidth,
       tubeless: req.body.tubeless,
       ridingStyle: req.body.ridingStyle,
+      skillLevel: req.body.skillLevel,
       manualTerrain: req.body.manualTerrain,
       hasGpxFile: !!req.file,
       gpxFileName: req.file?.originalname,
@@ -48,6 +49,7 @@ export async function analyzeHandlerV2(
       tireWidth: req.body.tireWidth,
       tubeless: req.body.tubeless,
       ridingStyle: req.body.ridingStyle,
+      skillLevel: req.body.skillLevel,
       manualTerrain: req.body.manualTerrain,
     });
 
@@ -62,6 +64,7 @@ export async function analyzeHandlerV2(
       tireWidth: riderInput.tireWidth,
       tubeless: riderInput.tubeless,
       ridingStyle: riderInput.ridingStyle,
+      skillLevel: riderInput.skillLevel,
     });
 
     const hasGpx = !!req.file;
@@ -211,6 +214,7 @@ export async function analyzeHandlerV2(
       tireWidth: riderInput.tireWidth,
       tubeless: riderInput.tubeless,
       ridingStyle: riderInput.ridingStyle,
+      skillLevel: riderInput.skillLevel,
       terrainProfile,
       routeMetrics,
       baselinePsi: {

@@ -27,9 +27,16 @@ export const BIKE_TYPE_BASELINES = {
 } as const;
 
 export const RIDING_STYLE_MODIFIERS = {
-  conservative: -1,
+  conservative: 1,
   moderate: 0,
-  aggressive: 1,
+  aggressive: -1,
+} as const;
+
+export const SKILL_LEVEL_MODIFIERS = {
+  beginner: 1.5,
+  intermediate: 0.5,
+  advanced: 0,
+  expert: -1,
 } as const;
 
 export const UPLOAD_CONFIG = {

@@ -46,7 +46,7 @@ describe('Analyze Endpoint Integration', () => {
         .field('bikeType', 'trail')
         .field('tireWidth', '2.4')
         .field('tubeless', 'true')
-        .field('ridingStyle', 'aggressive');
+        .field('ridingStyle', 'aggressive').field('skillLevel', 'intermediate');
 
       expect(response.status).toBe(200);
 
@@ -73,7 +73,7 @@ describe('Analyze Endpoint Integration', () => {
         .field('bikeType', 'enduro')
         .field('tireWidth', '2.5')
         .field('tubeless', 'true')
-        .field('ridingStyle', 'aggressive');
+        .field('ridingStyle', 'aggressive').field('skillLevel', 'intermediate');
 
       expect(response.status).toBe(200);
 
@@ -88,7 +88,7 @@ describe('Analyze Endpoint Integration', () => {
         .field('bikeType', 'gravel')
         .field('tireWidth', '2.0')
         .field('tubeless', 'true')
-        .field('ridingStyle', 'moderate');
+        .field('ridingStyle', 'moderate').field('skillLevel', 'intermediate');
 
       expect(response.status).toBe(200);
     });
@@ -101,7 +101,7 @@ describe('Analyze Endpoint Integration', () => {
         .field('bikeType', 'xc')
         .field('tireWidth', '2.2')
         .field('tubeless', 'false')
-        .field('ridingStyle', 'conservative');
+        .field('ridingStyle', 'conservative').field('skillLevel', 'intermediate');
 
       expect(response.status).toBe(200);
 
@@ -116,7 +116,7 @@ describe('Analyze Endpoint Integration', () => {
         .field('bikeType', 'trail')
         .field('tireWidth', '2.3')
         .field('tubeless', 'true')
-        .field('ridingStyle', 'moderate');
+        .field('ridingStyle', 'moderate').field('skillLevel', 'intermediate');
 
       expect(response.status).toBe(200);
       expect(response.body.routeMetrics).toBeDefined();
@@ -131,7 +131,7 @@ describe('Analyze Endpoint Integration', () => {
         .field('bikeType', 'trail')
         .field('tireWidth', '2.4')
         .field('tubeless', 'true')
-        .field('ridingStyle', 'aggressive');
+        .field('ridingStyle', 'aggressive').field('skillLevel', 'intermediate');
 
       expect(response.status).toBe(400);
       expect(response.body.error).toBe('gpx_parse_error');
@@ -146,7 +146,7 @@ describe('Analyze Endpoint Integration', () => {
         .field('bikeType', 'trail')
         .field('tireWidth', '2.4')
         .field('tubeless', 'true')
-        .field('ridingStyle', 'aggressive');
+        .field('ridingStyle', 'aggressive').field('skillLevel', 'intermediate');
 
       expect(response.status).toBe(400);
       expect(response.body.error).toBe('gpx_parse_error');
@@ -160,7 +160,7 @@ describe('Analyze Endpoint Integration', () => {
         .field('bikeType', 'invalid')
         .field('tireWidth', '2.4')
         .field('tubeless', 'true')
-        .field('ridingStyle', 'aggressive');
+        .field('ridingStyle', 'aggressive').field('skillLevel', 'intermediate');
 
       expect(response.status).toBe(400);
       expect(response.body.error).toBe('validation_error');
@@ -175,7 +175,7 @@ describe('Analyze Endpoint Integration', () => {
         .field('bikeType', 'trail')
         .field('tireWidth', '2.4')
         .field('tubeless', 'true')
-        .field('ridingStyle', 'aggressive');
+        .field('ridingStyle', 'aggressive').field('skillLevel', 'intermediate');
 
       expect(response.status).toBe(400);
       expect(response.body.error).toBe('validation_error');
@@ -189,7 +189,7 @@ describe('Analyze Endpoint Integration', () => {
         .field('bikeType', 'trail')
         .field('tireWidth', '2.4')
         .field('tubeless', 'true')
-        .field('ridingStyle', 'aggressive');
+        .field('ridingStyle', 'aggressive').field('skillLevel', 'intermediate');
 
       expect(response.status).toBe(400);
     });
@@ -202,7 +202,7 @@ describe('Analyze Endpoint Integration', () => {
         .field('bikeType', 'trail')
         .field('tireWidth', '1.0')
         .field('tubeless', 'true')
-        .field('ridingStyle', 'aggressive');
+        .field('ridingStyle', 'aggressive').field('skillLevel', 'intermediate');
 
       expect(response.status).toBe(400);
     });
@@ -228,7 +228,7 @@ describe('Analyze Endpoint Integration', () => {
         .field('bikeType', 'trail')
         .field('tireWidth', '2.4')
         .field('tubeless', 'true')
-        .field('ridingStyle', 'aggressive');
+        .field('ridingStyle', 'aggressive').field('skillLevel', 'intermediate');
 
       expect(response.status).toBe(400);
       expect(response.body.error).toBe('invalid_file');
@@ -246,7 +246,7 @@ describe('Analyze Endpoint Integration', () => {
         .field('bikeType', 'trail')
         .field('tireWidth', '2.4')
         .field('tubeless', 'true')
-        .field('ridingStyle', 'aggressive');
+        .field('ridingStyle', 'aggressive').field('skillLevel', 'intermediate');
 
       expect(response.status).toBe(200);
     });
@@ -259,7 +259,7 @@ describe('Analyze Endpoint Integration', () => {
         .field('bikeType', 'trail')
         .field('tireWidth', '2.4')
         .field('tubeless', 'true')
-        .field('ridingStyle', 'aggressive');
+        .field('ridingStyle', 'aggressive').field('skillLevel', 'intermediate');
 
       expect(response.status).toBe(200);
       expect(response.body.baseline.frontPsi).toBeGreaterThan(22);
@@ -273,7 +273,7 @@ describe('Analyze Endpoint Integration', () => {
         .field('bikeType', 'trail')
         .field('tireWidth', '2.8')
         .field('tubeless', 'true')
-        .field('ridingStyle', 'moderate');
+        .field('ridingStyle', 'moderate').field('skillLevel', 'intermediate');
 
       expect(response.status).toBe(200);
       expect(response.body.baseline.frontPsi).toBeDefined();
@@ -287,7 +287,7 @@ describe('Analyze Endpoint Integration', () => {
         .field('bikeType', 'downhill')
         .field('tireWidth', '2.5')
         .field('tubeless', 'true')
-        .field('ridingStyle', 'aggressive');
+        .field('ridingStyle', 'aggressive').field('skillLevel', 'intermediate');
 
       expect(response.status).toBe(200);
       expect(response.body.baseline.frontPsi).toBeDefined();
@@ -303,7 +303,7 @@ describe('Analyze Endpoint Integration', () => {
         .field('bikeType', 'trail')
         .field('tireWidth', '2.4')
         .field('tubeless', 'true')
-        .field('ridingStyle', 'aggressive');
+        .field('ridingStyle', 'aggressive').field('skillLevel', 'intermediate');
 
       expect(response.status).toBe(200);
       expect(response.body.inputMode).toBe('gpx');
@@ -326,7 +326,7 @@ describe('Analyze Endpoint Integration', () => {
         .field('bikeType', 'trail')
         .field('tireWidth', '2.4')
         .field('tubeless', 'true')
-        .field('ridingStyle', 'aggressive');
+        .field('ridingStyle', 'aggressive').field('skillLevel', 'intermediate');
 
       expect(response.status).toBe(200);
       
@@ -347,7 +347,7 @@ describe('Analyze Endpoint Integration', () => {
         .field('bikeType', 'trail')
         .field('tireWidth', '2.4')
         .field('tubeless', 'true')
-        .field('ridingStyle', 'aggressive');
+        .field('ridingStyle', 'aggressive').field('skillLevel', 'intermediate');
 
       expect(response.status).toBe(200);
       expect(response.body.osmEnrichmentStatus).toBeDefined();
@@ -365,7 +365,7 @@ describe('Analyze Endpoint Integration', () => {
         .field('bikeType', 'trail')
         .field('tireWidth', '2.4')
         .field('tubeless', 'true')
-        .field('ridingStyle', 'aggressive');
+        .field('ridingStyle', 'aggressive').field('skillLevel', 'intermediate');
 
       expect(response.status).toBe(200);
       expect(response.body.terrainBased).toBeDefined();
@@ -387,6 +387,7 @@ describe('Analyze Endpoint Integration', () => {
           tireWidth: 2.4,
           tubeless: true,
           ridingStyle: 'aggressive',
+          skillLevel: 'intermediate',
           manualTerrain: {
             gravel: 0.6,
             dirt: 0.3,
@@ -408,6 +409,7 @@ describe('Analyze Endpoint Integration', () => {
           tireWidth: 2.4,
           tubeless: true,
           ridingStyle: 'aggressive',
+          skillLevel: 'intermediate',
           manualTerrain: {
             gravel: 1,
             rocky: 1,
@@ -430,6 +432,7 @@ describe('Analyze Endpoint Integration', () => {
           tireWidth: 2.2,
           tubeless: true,
           ridingStyle: 'moderate',
+          skillLevel: 'intermediate',
           manualTerrain: {
             gravel: 1,
           },
@@ -448,6 +451,7 @@ describe('Analyze Endpoint Integration', () => {
           tireWidth: 2.4,
           tubeless: true,
           ridingStyle: 'aggressive',
+          skillLevel: 'intermediate',
           manualTerrain: {
             rocky: 0.5,
             technical: 0.5,
@@ -468,6 +472,7 @@ describe('Analyze Endpoint Integration', () => {
           tireWidth: 2.4,
           tubeless: true,
           ridingStyle: 'aggressive',
+          skillLevel: 'intermediate',
           manualTerrain: {
             gravel: 0.5,
             dirt: 0.5,
@@ -488,6 +493,7 @@ describe('Analyze Endpoint Integration', () => {
           tireWidth: 2.4,
           tubeless: true,
           ridingStyle: 'aggressive',
+          skillLevel: 'intermediate',
           manualTerrain: {
             gravel: 1,
           },
@@ -506,6 +512,7 @@ describe('Analyze Endpoint Integration', () => {
           tireWidth: 2.4,
           tubeless: true,
           ridingStyle: 'aggressive',
+          skillLevel: 'intermediate',
           manualTerrain: {
             asphalt: 0,
             gravel: 0,
@@ -527,6 +534,7 @@ describe('Analyze Endpoint Integration', () => {
           tireWidth: 2.4,
           tubeless: true,
           ridingStyle: 'aggressive',
+          skillLevel: 'intermediate',
           manualTerrain: {
             gravel: 2,
           },
@@ -546,6 +554,7 @@ describe('Analyze Endpoint Integration', () => {
           tireWidth: 2.4,
           tubeless: true,
           ridingStyle: 'aggressive',
+          skillLevel: 'intermediate',
           manualTerrain: {
             rocky: 1,
           },
@@ -561,6 +570,7 @@ describe('Analyze Endpoint Integration', () => {
           tireWidth: 2.4,
           tubeless: true,
           ridingStyle: 'aggressive',
+          skillLevel: 'intermediate',
           manualTerrain: {
             asphalt: 1,
           },
@@ -582,6 +592,7 @@ describe('Analyze Endpoint Integration', () => {
           tireWidth: 2.4,
           tubeless: true,
           ridingStyle: 'aggressive',
+          skillLevel: 'intermediate',
           manualTerrain: {
             gravel: 0.5,
             rocky: 0.5,

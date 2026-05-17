@@ -1,5 +1,5 @@
 import type { TerrainProfile } from '../terrain/terrain.types.js';
-import type { InputMode, RouteMetrics } from '../../types/analyze.types.js';
+import type { InputMode, RouteMetrics, SkillLevel } from '../../types/analyze.types';
 
 export interface AIContext {
   riderWeight: number;
@@ -30,6 +30,20 @@ export interface AIContext {
     front: number;
     rear: number;
   };
+}
+
+export interface AIContextV2 {
+  riderWeight: number;
+  bikeType: string;
+  tireWidth: number;
+  tubeless: boolean;
+  ridingStyle: string;
+  skillLevel: SkillLevel;
+  terrainProfile: TerrainProfile;
+  routeMetrics?: RouteMetrics;
+  baselinePsi: { front: number; rear: number };
+  adjustedPsi: { front: number; rear: number };
+  inputMode: InputMode;
 }
 
 export interface AIContextV2 {

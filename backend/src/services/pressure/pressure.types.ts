@@ -6,6 +6,7 @@ export interface PressureInput {
   tireWidth: number;
   tubeless: boolean;
   ridingStyle: 'conservative' | 'moderate' | 'aggressive';
+  skillLevel: 'beginner' | 'intermediate' | 'advanced' | 'expert';
 }
 
 export interface BaselinePressure {
@@ -14,6 +15,7 @@ export interface BaselinePressure {
   weightAdjustment: number;
   widthAdjustment: number;
   styleAdjustment: number;
+  skillAdjustment: number;
 }
 
 export interface AdjustedPressure {

@@ -4,6 +4,7 @@ import {
   RIDER_WEIGHT_ADJUSTMENTS,
   TIRE_WIDTH_ADJUSTMENTS,
   RIDING_STYLE_MODIFIERS,
+  SKILL_LEVEL_MODIFIERS,
   PSI_LIMITS,
   SURFACE_TYPE_MODIFIERS,
 } from '../../utils/constants.js';
@@ -37,6 +38,10 @@ export function calculateStyleAdjustment(style: string): number {
   return RIDING_STYLE_MODIFIERS[style as keyof typeof RIDING_STYLE_MODIFIERS] ?? 0;
 }
 
+export function calculateSkillAdjustment(skillLevel: string): number {
+  return SKILL_LEVEL_MODIFIERS[skillLevel as keyof typeof SKILL_LEVEL_MODIFIERS] ?? 0;
+}
+
 export function calculateTubelessBonus(tubeless: boolean): number {
   return tubeless ? -1 : 0;
 }
@@ -52,6 +57,7 @@ export function calculateBaselinePressure(input: PressureInput): BaselinePressur
       bikeType: input.bikeType,
       tireWidth: input.tireWidth,
       ridingStyle: input.ridingStyle,
+      skillLevel: input.skillLevel,
       tubeless: input.tubeless,
     },
   });
@@ -88,8 +94,14 @@ export function calculateBaselinePressure(input: PressureInput): BaselinePressur
     adjustment: styleAdjustment,
   });
 
-  const frontPsi = bikeBaseline.frontBase + weightAdjustment - widthAdjustment + styleAdjustment;
-  const rearPsi = bikeBaseline.rearBase + weightAdjustment - widthAdjustment + styleAdjustment;
+  const skillAdjustment = calculateSkillAdjustment(input.skillLevel);
+  logger.debug('Skill Adjustment', {
+    skillLevel: input.skillLevel,
+    adjustment: skillAdjustment,
+  });
+
+  const frontPsi = bikeBaseline.frontBase + weightAdjustment - widthAdjustment + styleAdjustment + skillAdjustment;
+  const rearPsi = bikeBaseline.rearBase + weightAdjustment - widthAdjustment + styleAdjustment + skillAdjustment;
 
   const result = {
     frontPsi,
@@ -97,6 +109,7 @@ export function calculateBaselinePressure(input: PressureInput): BaselinePressur
     weightAdjustment,
     widthAdjustment,
     styleAdjustment,
+    skillAdjustment,
   };
   
   logger.success('Baseline Pressure Result', {
@@ -108,6 +121,7 @@ export function calculateBaselinePressure(input: PressureInput): BaselinePressur
       weightAdjustment,
       widthAdjustment: '-' + Math.abs(widthAdjustment),
       styleAdjustment,
+      skillAdjustment,
     },
   });
 

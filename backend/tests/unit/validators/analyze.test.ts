@@ -10,6 +10,7 @@ describe('Analyze Validator', () => {
         tireWidth: 2.4,
         tubeless: true,
         ridingStyle: 'aggressive',
+        skillLevel: 'intermediate',
       });
 
       expect(result.success).toBe(true);
@@ -19,6 +20,7 @@ describe('Analyze Validator', () => {
         expect(result.data.tireWidth).toBe(2.4);
         expect(result.data.tubeless).toBe(true);
         expect(result.data.ridingStyle).toBe('aggressive');
+        expect(result.data.skillLevel).toBe('intermediate');
       }
     });
 
@@ -29,6 +31,7 @@ describe('Analyze Validator', () => {
         tireWidth: '2.4',
         tubeless: 'true',
         ridingStyle: 'aggressive',
+        skillLevel: 'intermediate',
       });
 
       expect(result.success).toBe(true);
@@ -45,6 +48,7 @@ describe('Analyze Validator', () => {
         tireWidth: 2.4,
         tubeless: true,
         ridingStyle: 'aggressive',
+        skillLevel: 'intermediate',
       });
 
       expect(result.success).toBe(false);
@@ -57,6 +61,7 @@ describe('Analyze Validator', () => {
         tireWidth: 2.4,
         tubeless: true,
         ridingStyle: 'aggressive',
+        skillLevel: 'intermediate',
       });
 
       expect(result.success).toBe(false);
@@ -69,6 +74,7 @@ describe('Analyze Validator', () => {
         tireWidth: 2.4,
         tubeless: true,
         ridingStyle: 'aggressive',
+        skillLevel: 'intermediate',
       });
 
       expect(result.success).toBe(false);
@@ -81,6 +87,7 @@ describe('Analyze Validator', () => {
         tireWidth: 1.0,
         tubeless: true,
         ridingStyle: 'aggressive',
+        skillLevel: 'intermediate',
       });
 
       expect(result.success).toBe(false);
@@ -93,6 +100,20 @@ describe('Analyze Validator', () => {
         tireWidth: 2.4,
         tubeless: true,
         ridingStyle: 'invalid',
+        skillLevel: 'intermediate',
+      });
+
+      expect(result.success).toBe(false);
+    });
+
+    it('should reject invalid skill level', () => {
+      const result = validateRiderInput({
+        riderWeight: 82,
+        bikeType: 'trail',
+        tireWidth: 2.4,
+        tubeless: true,
+        ridingStyle: 'aggressive',
+        skillLevel: 'invalid',
       });
 
       expect(result.success).toBe(false);
