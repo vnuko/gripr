@@ -8,17 +8,20 @@ import {
   Car,
   Trees,
   TreePine,
-} from 'lucide-react';
-import { SegmentedControl } from '../ui/SegmentedControl';
+} from "lucide-react";
+import { SegmentedControl } from "../ui/SegmentedControl";
+
+const FONT_DISPLAY = "var(--gripr-font-display)";
+const TEXT_MUTED = "var(--gripr-text-muted)";
 
 const TERRAIN_OPTIONS = [
-  { label: 'Road / Paved Path', icon: <Car size={12} /> },
-  { label: 'Gravel / Dirt Roads', icon: <Route size={12} /> },
-  { label: 'Forest / Soil Trails', icon: <Trees size={12} /> },
-  { label: 'Muddy / Soft Ground', icon: <Droplets size={12} /> },
-  { label: 'Rocky / Stony Terrain', icon: <Mountain size={12} /> },
-  { label: 'Roots / Rough Trails', icon: <TreePine size={12} /> },
-  { label: 'Steep / Extreme Descents', icon: <TrendingDown size={12} /> },
+  { label: "Road / Paved Path", icon: <Car size={12} /> },
+  { label: "Gravel / Dirt Roads", icon: <Route size={12} /> },
+  { label: "Forest / Soil Trails", icon: <Trees size={12} /> },
+  { label: "Muddy / Soft Ground", icon: <Droplets size={12} /> },
+  { label: "Rocky / Stony Terrain", icon: <Mountain size={12} /> },
+  { label: "Roots / Rough Trails", icon: <TreePine size={12} /> },
+  { label: "Steep / Extreme Descents", icon: <TrendingDown size={12} /> },
 ];
 
 interface TerrainSectionProps {
@@ -33,25 +36,29 @@ interface TerrainSectionProps {
 
 const getWeatherDescription = (weather: string) => {
   switch (weather) {
-    case 'Dry': return 'Hard, baked trails — slightly higher pressures recommended';
-    case 'Damp': return 'Varied grip — balanced pressure for traction & roll resistance';
-    case 'Wet': return 'Slippery — lower pressures for max contact patch & grip';
-    default: return '';
+    case "Dry":
+      return "Hard, baked trails — slightly higher pressures recommended";
+    case "Damp":
+      return "Varied grip — balanced pressure for traction & roll resistance";
+    case "Wet":
+      return "Slippery — lower pressures for max contact patch & grip";
+    default:
+      return "";
   }
 };
 
 const getTempColor = (temp: number) => {
-  if (temp <= 5) return '#60A5FA';
-  if (temp <= 15) return '#34D399';
-  if (temp <= 28) return '#FBBF24';
-  return '#F87171';
+  if (temp <= 5) return "#60A5FA";
+  if (temp <= 15) return "#34D399";
+  if (temp <= 28) return "#FBBF24";
+  return "#F87171";
 };
 
 const getTempDescription = (temp: number) => {
-  if (temp <= 5) return 'Cold — air pressure drops, adjust before ride';
-  if (temp <= 20) return 'Moderate — standard pressure range';
-  if (temp <= 32) return 'Warm — slight pressure increase expected';
-  return 'Hot — check pressure mid-ride';
+  if (temp <= 5) return "Cold — air pressure drops, adjust before ride";
+  if (temp <= 20) return "Moderate — standard pressure range";
+  if (temp <= 32) return "Warm — slight pressure increase expected";
+  return "Hot — check pressure mid-ride";
 };
 
 export function TerrainSection({
@@ -75,40 +82,50 @@ export function TerrainSection({
   const weatherValue = weather.charAt(0).toUpperCase() + weather.slice(1);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
       <div className="gripr-card">
         <div className="gripr-card-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <div className="gripr-section-icon">
               <Mountain size={18} strokeWidth={2} />
             </div>
             <div>
-              <div className="gripr-section-label" style={{ marginBottom: 0 }}>Step 4</div>
-              <h3 style={{ margin: 0, color: 'var(--gripr-text-primary)', fontFamily: 'var(--gripr-font-display)' }}>
+              <div className="gripr-section-label" style={{ marginBottom: 0 }}>
+                Step 4
+              </div>
+              <h3
+                style={{
+                  margin: 0,
+                  color: "var(--gripr-text-primary)",
+                  fontFamily: FONT_DISPLAY,
+                }}
+              >
                 Terrain Conditions
               </h3>
             </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
             {selectedTerrains.length > 0 && (
               <span
                 style={{
-                  background: 'var(--gripr-accent)',
-                  color: 'white',
+                  background: "var(--gripr-accent)",
+                  color: "white",
                   borderRadius: 50,
                   width: 22,
                   height: 22,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '0.72rem',
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "0.72rem",
                   fontWeight: 700,
                 }}
               >
                 {selectedTerrains.length}
               </span>
             )}
-            <span style={{ fontSize: '0.78rem', color: 'var(--gripr-text-muted)' }}>
+            <span
+              style={{ fontSize: "0.78rem", color: TEXT_MUTED }}
+            >
               Select all that apply
             </span>
           </div>
@@ -120,7 +137,7 @@ export function TerrainSection({
               <button
                 key={label}
                 type="button"
-                className={`gripr-chip ${selectedTerrains.includes(label) ? 'selected' : ''}`}
+                className={`gripr-chip ${selectedTerrains.includes(label) ? "selected" : ""}`}
                 onClick={() => toggleTerrain(label)}
                 disabled={disabled}
               >
@@ -134,13 +151,21 @@ export function TerrainSection({
 
       <div className="gripr-card">
         <div className="gripr-card-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <div className="gripr-section-icon">
               <CloudRain size={18} strokeWidth={2} />
             </div>
             <div>
-              <div className="gripr-section-label" style={{ marginBottom: 0 }}>Step 5</div>
-              <h3 style={{ margin: 0, color: 'var(--gripr-text-primary)', fontFamily: 'var(--gripr-font-display)' }}>
+              <div className="gripr-section-label" style={{ marginBottom: 0 }}>
+                Step 5
+              </div>
+              <h3
+                style={{
+                  margin: 0,
+                  color: "var(--gripr-text-primary)",
+                  fontFamily: FONT_DISPLAY,
+                }}
+              >
                 Weather Conditions
               </h3>
             </div>
@@ -148,17 +173,28 @@ export function TerrainSection({
         </div>
 
         <div className="gripr-card-body">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.5rem' }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+              gap: "1.5rem",
+            }}
+          >
             <div>
               <label className="gripr-label">Trail Conditions</label>
               <SegmentedControl
-                options={['Dry', 'Damp', 'Wet']}
+                options={["Dry", "Damp", "Wet"]}
                 value={weatherValue}
                 onChange={(v) => onWeatherChange(v.toLowerCase())}
                 disabled={disabled}
               />
-              <div style={{ marginTop: '0.5rem' }}>
-                <div style={{ fontSize: '0.78rem', color: 'var(--gripr-text-muted)' }}>
+              <div style={{ marginTop: "0.5rem" }}>
+                <div
+                  style={{
+                    fontSize: "0.78rem",
+                    color: TEXT_MUTED,
+                  }}
+                >
                   {getWeatherDescription(weatherValue)}
                 </div>
               </div>
@@ -170,29 +206,30 @@ export function TerrainSection({
                 <span
                   style={{
                     marginLeft: 8,
-                    fontFamily: 'var(--gripr-font-display)',
+                    fontFamily: FONT_DISPLAY,
                     fontWeight: 700,
                     color: getTempColor(temperature),
-                    fontSize: '0.85rem',
+                    fontSize: "0.85rem",
                   }}
                 >
                   {temperature}°C
                 </span>
               </label>
 
-              <div style={{ position: 'relative', padding: '0.5rem 0' }}>
+              <div style={{ position: "relative", padding: "0.5rem 0" }}>
                 <div
                   style={{
-                    position: 'absolute',
-                    top: '50%',
+                    position: "absolute",
+                    top: "50%",
                     left: 0,
                     right: 0,
                     height: 6,
-                    transform: 'translateY(-50%)',
+                    transform: "translateY(-50%)",
                     borderRadius: 50,
-                    background: 'linear-gradient(to right, #60A5FA 0%, #34D399 25%, #FBBF24 62%, #F87171 100%)',
+                    background:
+                      "linear-gradient(to right, #60A5FA 0%, #34D399 25%, #FBBF24 62%, #F87171 100%)",
                     opacity: 0.3,
-                    pointerEvents: 'none',
+                    pointerEvents: "none",
                   }}
                 />
                 <input
@@ -204,21 +241,27 @@ export function TerrainSection({
                   onChange={(e) => onTemperatureChange(Number(e.target.value))}
                   disabled={disabled}
                   style={{
-                    position: 'relative',
+                    position: "relative",
                     zIndex: 1,
-                    background: 'transparent',
+                    background: "transparent",
                   }}
                 />
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.2rem' }}>
-                {['0°C', '10°C', '20°C', '30°C', '40°C'].map((t) => (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginTop: "0.2rem",
+                }}
+              >
+                {["0°C", "10°C", "20°C", "30°C", "40°C"].map((t) => (
                   <span
                     key={t}
                     style={{
-                      fontSize: '0.68rem',
-                      color: 'var(--gripr-text-muted)',
-                      fontFamily: 'var(--gripr-font-display)',
+                      fontSize: "0.68rem",
+                      color: TEXT_MUTED,
+                      fontFamily: FONT_DISPLAY,
                       fontWeight: 600,
                     }}
                   >
@@ -227,16 +270,26 @@ export function TerrainSection({
                 ))}
               </div>
 
-              <div style={{ marginTop: '0.5rem' }}>
+              <div style={{ marginTop: "0.5rem" }}>
                 <div
                   style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 6
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6,
                   }}
                 >
-                  <Thermometer size={12} style={{ color: getTempColor(temperature) }} />
-                  <span style={{ fontSize: '0.75rem', color: 'var(--gripr-text-secondary)', fontFamily: 'var(--gripr-font-display)', fontWeight: 600 }}>
+                  <Thermometer
+                    size={12}
+                    style={{ color: getTempColor(temperature) }}
+                  />
+                  <span
+                    style={{
+                      fontSize: "0.75rem",
+                      color: "var(--gripr-text-secondary)",
+                      fontFamily: FONT_DISPLAY,
+                      fontWeight: 600,
+                    }}
+                  >
                     {getTempDescription(temperature)}
                   </span>
                 </div>

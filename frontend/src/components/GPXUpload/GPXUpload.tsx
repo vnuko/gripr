@@ -1,5 +1,5 @@
-import { useState, useRef, useCallback } from 'react';
-import { UploadCloud, FileText, X } from 'lucide-react';
+import { useState, useRef, useCallback } from "react";
+import { UploadCloud, FileText, X } from "lucide-react";
 
 interface GPXUploadProps {
   file: File | null;
@@ -7,7 +7,11 @@ interface GPXUploadProps {
   disabled?: boolean;
 }
 
-export function GPXUpload({ file, onChange, disabled = false }: GPXUploadProps) {
+export function GPXUpload({
+  file,
+  onChange,
+  disabled = false,
+}: GPXUploadProps) {
   const [dragOver, setDragOver] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -17,33 +21,42 @@ export function GPXUpload({ file, onChange, disabled = false }: GPXUploadProps) 
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setDragOver(false);
-    if (disabled) return;
-    const dropped = e.dataTransfer.files[0];
-    if (dropped && dropped.name.toLowerCase().endsWith('.gpx')) {
-      onChange(dropped);
-    }
-  }, [disabled, onChange]);
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      setDragOver(false);
+      if (disabled) return;
+      const dropped = e.dataTransfer.files[0];
+      if (dropped && dropped.name.toLowerCase().endsWith(".gpx")) {
+        onChange(dropped);
+      }
+    },
+    [disabled, onChange],
+  );
 
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    if (!disabled) setDragOver(true);
-  }, [disabled]);
+  const handleDragOver = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      if (!disabled) setDragOver(true);
+    },
+    [disabled],
+  );
 
   const handleDragLeave = useCallback(() => {
     setDragOver(false);
   }, []);
 
-  const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const selected = e.target.files?.[0];
-    if (selected) onChange(selected);
-  }, [onChange]);
+  const handleFileChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const selected = e.target.files?.[0];
+      if (selected) onChange(selected);
+    },
+    [onChange],
+  );
 
   const handleClear = useCallback(() => {
     onChange(null);
-    if (inputRef.current) inputRef.current.value = '';
+    if (inputRef.current) inputRef.current.value = "";
   }, [onChange]);
 
   if (file) {
@@ -54,23 +67,32 @@ export function GPXUpload({ file, onChange, disabled = false }: GPXUploadProps) 
             <FileText size={18} />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div className="gripr-file-name" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <div
+              className="gripr-file-name"
+              style={{
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
               {file.name}
             </div>
-            <div className="gripr-file-size">{formatSize(file.size)} · GPX Route File</div>
+            <div className="gripr-file-size">
+              {formatSize(file.size)} · GPX Route File
+            </div>
           </div>
           {!disabled && (
             <button
               onClick={handleClear}
               style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                color: 'var(--gripr-text-muted)',
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                color: "var(--gripr-text-muted)",
                 padding: 4,
                 borderRadius: 6,
-                display: 'flex',
-                alignItems: 'center',
+                display: "flex",
+                alignItems: "center",
               }}
               title="Remove file"
             >
@@ -175,12 +197,15 @@ export function GPXUpload({ file, onChange, disabled = false }: GPXUploadProps) 
 
   return (
     <div
-      className={`gripr-upload-zone ${dragOver ? 'drag-over' : ''}`}
+      className={`gripr-upload-zone ${dragOver ? "drag-over" : ""}`}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
       onClick={() => !disabled && inputRef.current?.click()}
-      style={{ cursor: disabled ? 'not-allowed' : 'pointer', opacity: disabled ? 0.5 : 1 }}
+      style={{
+        cursor: disabled ? "not-allowed" : "pointer",
+        opacity: disabled ? 0.5 : 1,
+      }}
     >
       <input
         ref={inputRef}
@@ -188,17 +213,15 @@ export function GPXUpload({ file, onChange, disabled = false }: GPXUploadProps) 
         accept=".gpx"
         onChange={handleFileChange}
         disabled={disabled}
-        style={{ display: 'none' }}
+        style={{ display: "none" }}
       />
       <div className="gripr-upload-icon">
         <UploadCloud size={26} strokeWidth={1.8} />
       </div>
       <div className="gripr-upload-title">
-        {dragOver ? 'Drop your GPX file here' : 'Drag & drop your GPX file'}
+        {dragOver ? "Drop your GPX file here" : "Drag & drop your GPX file"}
       </div>
-      <div className="gripr-upload-sub">
-        or click to browse your files
-      </div>
+      <div className="gripr-upload-sub">or click to browse your files</div>
       <div className="gripr-upload-format">
         <FileText size={11} />
         .GPX Format Only

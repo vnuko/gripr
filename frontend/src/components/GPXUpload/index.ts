@@ -1,1 +1,1 @@
-export { GPXUpload } from './GPXUpload.js';
+export { GPXUpload } from "./GPXUpload.js";

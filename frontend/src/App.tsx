@@ -1,4 +1,4 @@
-import { HomePage } from './pages/HomePage/index.js';
+import { HomePage } from "./pages/HomePage/index.js";
 
 function App() {
   return <HomePage />;

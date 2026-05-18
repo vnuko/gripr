@@ -1,14 +1,14 @@
-import '@testing-library/jest-dom';
-import { server } from './mocks/server.js';
-import { beforeAll, afterAll, afterEach, vi } from 'vitest';
+import "@testing-library/jest-dom";
+import { server } from "./mocks/server.js";
+import { beforeAll, afterAll, afterEach, vi } from "vitest";
 
-beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
 
 afterEach(() => server.resetHandlers());
 
 afterAll(() => server.close());
 
-Object.defineProperty(window, 'matchMedia', {
+Object.defineProperty(window, "matchMedia", {
   writable: true,
   value: vi.fn().mockImplementation((query: string) => ({
     matches: false,
@@ -22,7 +22,7 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 });
 
-Object.defineProperty(window, 'scrollTo', {
+Object.defineProperty(window, "scrollTo", {
   value: vi.fn(),
   writable: true,
 });

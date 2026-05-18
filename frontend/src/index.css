@@ -1,5 +1,5 @@
-@import 'bootstrap/dist/css/bootstrap.min.css';
-@import './styles/gripr.css';
+@import "bootstrap/dist/css/bootstrap.min.css";
+@import "./styles/gripr.css";
 
 .app {
   min-height: 100vh;

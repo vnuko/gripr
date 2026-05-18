@@ -1,25 +1,23 @@
-import type { AnalyzeResponse, HealthResponse, AnalyzeRequest } from './generated.js';
+import type {
+  AnalyzeResponse,
+  HealthResponse,
+  AnalyzeRequest,
+} from "./generated.js";
+import { BIKE_TYPE_TIRE_DEFAULTS } from "../types/rider-input.js";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000';
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3000";
 
-const BACKEND_TERRAIN_TYPES = {
-  rocky: 'rocky',
-  technical: 'technical',
-  dirt: 'dirt',
-  gravel: 'gravel',
-  asphalt: 'asphalt',
-} as const;
-
-type BackendTerrainType = keyof typeof BACKEND_TERRAIN_TYPES;
+type BackendTerrainType = "rocky" | "technical" | "dirt" | "gravel" | "asphalt";
 
 const TERRAIN_MAPPING: Record<string, BackendTerrainType> = {
-  'Road / Paved Path': 'asphalt',
-  'Gravel / Dirt Roads': 'gravel',
-  'Forest / Soil Trails': 'dirt',
-  'Muddy / Soft Ground': 'dirt',
-  'Rocky / Stony Terrain': 'rocky',
-  'Roots / Rough Trails': 'technical',
-  'Steep / Extreme Descents': 'technical',
+  "Road / Paved Path": "asphalt",
+  "Gravel / Dirt Roads": "gravel",
+  "Forest / Soil Trails": "dirt",
+  "Muddy / Soft Ground": "dirt",
+  "Rocky / Stony Terrain": "rocky",
+  "Roots / Rough Trails": "technical",
+  "Steep / Extreme Descents": "technical",
 };
 
 interface BackendAnalyzeResponse {
@@ -29,7 +27,7 @@ interface BackendAnalyzeResponse {
     frontPsi: number;
     rearPsi: number;
     reasoning: string;
-    confidence?: 'high' | 'medium' | 'low';
+    confidence?: "high" | "medium" | "low";
     warnings?: string[];
   };
   routeMetrics?: {
@@ -49,34 +47,47 @@ interface BackendAnalyzeResponse {
       technical: number;
     };
   };
-  inputMode: 'gpx' | 'manual';
+  inputMode: "gpx" | "manual";
+}
+
+function getConfidenceValue(confidence: "high" | "medium" | "low" | undefined): number {
+  if (confidence === "high") return 95;
+  if (confidence === "medium") return 80;
+  return 70;
+}
+
+function getTemperatureAdjustment(temperature: number): number {
+  if (temperature < 5) return -1;
+  if (temperature > 30) return 1;
+  return 0;
+}
+
+function getTerrainBonus(terrainCount: number): number {
+  if (terrainCount > 2) return 8;
+  if (terrainCount > 0) return 5;
+  return 0;
 }
 
 function transformBackendResponse(
-  backendResponse: BackendAnalyzeResponse
+  backendResponse: BackendAnalyzeResponse,
 ): AnalyzeResponse {
   return {
     baseline: {
       front: backendResponse.baseline.frontPsi,
       rear: backendResponse.baseline.rearPsi,
       confidence: 65,
-      note: 'Standard weight-based starting point.',
+      note: "Standard weight-based starting point.",
     },
     terrainAdjusted: {
       front: backendResponse.adjusted.frontPsi,
       rear: backendResponse.adjusted.rearPsi,
       confidence: 85,
-      note: 'Adjusted for terrain and riding style.',
+      note: "Adjusted for terrain and riding style.",
     },
     aiRecommended: {
       front: backendResponse.aiRecommendation.frontPsi,
       rear: backendResponse.aiRecommendation.rearPsi,
-      confidence:
-        backendResponse.aiRecommendation.confidence === 'high'
-          ? 95
-          : backendResponse.aiRecommendation.confidence === 'medium'
-          ? 80
-          : 70,
+      confidence: getConfidenceValue(backendResponse.aiRecommendation.confidence),
       note: backendResponse.aiRecommendation.reasoning,
     },
     routeMetrics: backendResponse.routeMetrics,
@@ -87,19 +98,15 @@ function transformBackendResponse(
 function resolveTireWidth(
   tireFront: number | undefined,
   tireRear: number | undefined,
-  bikeType: string
+  bikeType: string,
 ): number {
-  const BIKE_TYPE_DEFAULTS: Record<string, number> = {
-    xc: 2.2,
-    trail: 2.4,
-    enduro: 2.5,
-    downhill: 2.5,
-    gravel: 1.77,
-  };
-
-  if (tireFront !== undefined && !isNaN(tireFront) && tireFront > 0) return tireFront;
-  if (tireRear !== undefined && !isNaN(tireRear) && tireRear > 0) return tireRear;
-  return BIKE_TYPE_DEFAULTS[bikeType] ?? 2.4;
+  if (tireFront !== undefined && !isNaN(tireFront) && tireFront > 0)
+    return tireFront;
+  if (tireRear !== undefined && !isNaN(tireRear) && tireRear > 0)
+    return tireRear;
+  const defaults =
+    BIKE_TYPE_TIRE_DEFAULTS[bikeType as keyof typeof BIKE_TYPE_TIRE_DEFAULTS];
+  return defaults?.front ?? 2.4;
 }
 
 function mapTerrainsToPercentages(selectedTerrains: string[]): {
@@ -114,7 +121,7 @@ function mapTerrainsToPercentages(selectedTerrains: string[]): {
   }
 
   const backendTypes: Record<string, number> = {};
-  
+
   for (const terrain of selectedTerrains) {
     const backendType = TERRAIN_MAPPING[terrain];
     if (backendType) {
@@ -124,7 +131,7 @@ function mapTerrainsToPercentages(selectedTerrains: string[]): {
 
   const total = selectedTerrains.length;
   const result: Record<string, number> = {};
-  
+
   for (const [type, count] of Object.entries(backendTypes)) {
     result[type] = count / total;
   }
@@ -134,25 +141,32 @@ function mapTerrainsToPercentages(selectedTerrains: string[]): {
 
 export async function analyzeRoute(
   file: File,
-  riderInput: AnalyzeRequest
+  riderInput: AnalyzeRequest,
 ): Promise<AnalyzeResponse> {
   const formData = new FormData();
-  formData.append('file', file);
-  formData.append('riderWeight', riderInput.riderWeight.toString());
-  formData.append('bikeType', riderInput.bikeType);
-  formData.append('tireWidth', resolveTireWidth(riderInput.tireFront, riderInput.tireRear, riderInput.bikeType).toString());
-  formData.append('tubeless', riderInput.tubeless.toString());
-  formData.append('ridingStyle', riderInput.ridingStyle);
-  formData.append('skillLevel', riderInput.skillLevel);
+  formData.append("file", file);
+  formData.append("riderWeight", riderInput.riderWeight.toString());
+  formData.append("bikeType", riderInput.bikeType);
+  formData.append(
+    "tireWidth",
+    resolveTireWidth(
+      riderInput.tireFront,
+      riderInput.tireRear,
+      riderInput.bikeType,
+    ).toString(),
+  );
+  formData.append("tubeless", riderInput.tubeless.toString());
+  formData.append("ridingStyle", riderInput.ridingStyle);
+  formData.append("skillLevel", riderInput.skillLevel);
 
   const response = await fetch(`${API_BASE_URL}/api/analyze`, {
-    method: 'POST',
+    method: "POST",
     body: formData,
   });
 
   if (!response.ok) {
     const errorData = await response.json();
-    throw new Error(errorData.message ?? 'Analysis failed');
+    throw new Error(errorData.message ?? "Analysis failed");
   }
 
   const backendResponse: BackendAnalyzeResponse = await response.json();
@@ -160,14 +174,20 @@ export async function analyzeRoute(
 }
 
 export async function analyzeTerrain(
-  riderInput: AnalyzeRequest
+  riderInput: AnalyzeRequest,
 ): Promise<AnalyzeResponse> {
-  const manualTerrain = mapTerrainsToPercentages(riderInput.selectedTerrains || []);
+  const manualTerrain = mapTerrainsToPercentages(
+    riderInput.selectedTerrains || [],
+  );
 
   const body = {
     riderWeight: riderInput.riderWeight,
     bikeType: riderInput.bikeType,
-    tireWidth: resolveTireWidth(riderInput.tireFront, riderInput.tireRear, riderInput.bikeType),
+    tireWidth: resolveTireWidth(
+      riderInput.tireFront,
+      riderInput.tireRear,
+      riderInput.bikeType,
+    ),
     tubeless: riderInput.tubeless,
     ridingStyle: riderInput.ridingStyle,
     skillLevel: riderInput.skillLevel,
@@ -175,16 +195,16 @@ export async function analyzeTerrain(
   };
 
   const response = await fetch(`${API_BASE_URL}/api/analyze`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(body),
   });
 
   if (!response.ok) {
     const errorData = await response.json();
-    throw new Error(errorData.message ?? 'Analysis failed');
+    throw new Error(errorData.message ?? "Analysis failed");
   }
 
   const backendResponse: BackendAnalyzeResponse = await response.json();
@@ -193,15 +213,17 @@ export async function analyzeTerrain(
 
 export async function checkHealth(): Promise<HealthResponse> {
   const response = await fetch(`${API_BASE_URL}/health`);
-  
+
   if (!response.ok) {
-    throw new Error('Health check failed');
+    throw new Error("Health check failed");
   }
 
   return response.json();
 }
 
-export function computeMockRecommendations(state: AnalyzeRequest): AnalyzeResponse {
+export function computeMockRecommendations(
+  state: AnalyzeRequest,
+): AnalyzeResponse {
   const {
     riderWeight,
     skillLevel,
@@ -255,41 +277,53 @@ export function computeMockRecommendations(state: AnalyzeRequest): AnalyzeRespon
   const wAdj = weatherAdj[weather] ?? 0;
   const tubelessAdj = tubeless ? -2 : 0;
   const insertAdj = tireInserts ? -1 : 0;
-  const rockyAdj = (selectedTerrains?.includes('Rocky / Stony Terrain') ?? false) ? -0.5 : 0;
-  const wetRootsAdj = (selectedTerrains?.includes('Roots / Rough Trails') ?? false) ? -0.5 : 0;
-  const tempAdj = temperature < 5 ? -1 : temperature > 30 ? 1 : 0;
+  const rockyAdj =
+    (selectedTerrains?.includes("Rocky / Stony Terrain") ?? false) ? -0.5 : 0;
+  const wetRootsAdj =
+    (selectedTerrains?.includes("Roots / Rough Trails") ?? false) ? -0.5 : 0;
+  const tempAdj = getTemperatureAdjustment(temperature);
 
-  const terrainAdjFront = Math.round((baseFront + sAdj + rAdj + bAdj + wAdj + rockyAdj + wetRootsAdj) * 2) / 2;
-  const terrainAdjRear = Math.round((baseRear + sAdj + rAdj + bAdj + wAdj + rockyAdj) * 2) / 2;
+  const terrainAdjFront =
+    Math.round(
+      (baseFront + sAdj + rAdj + bAdj + wAdj + rockyAdj + wetRootsAdj) * 2,
+    ) / 2;
+  const terrainAdjRear =
+    Math.round((baseRear + sAdj + rAdj + bAdj + wAdj + rockyAdj) * 2) / 2;
 
-  const aiFront = Math.round((terrainAdjFront + tubelessAdj + insertAdj + tempAdj) * 2) / 2;
-  const aiRear = Math.round((terrainAdjRear + tubelessAdj * 0.7 + insertAdj + tempAdj) * 2) / 2;
+  const aiFront =
+    Math.round((terrainAdjFront + tubelessAdj + insertAdj + tempAdj) * 2) / 2;
+  const aiRear =
+    Math.round((terrainAdjRear + tubelessAdj * 0.7 + insertAdj + tempAdj) * 2) /
+    2;
 
   const clampF = (v: number) => Math.max(14, Math.min(38, v));
   const clampR = (v: number) => Math.max(16, Math.min(40, v));
 
   const confidenceBase = 72;
-  const terrainBonus = (selectedTerrains?.length ?? 0) > 2 ? 8 : (selectedTerrains?.length ?? 0) > 0 ? 5 : 0;
-  const confidence = Math.min(97, confidenceBase + terrainBonus + (tubeless ? 3 : 0) + (tireInserts ? 2 : 0));
+  const terrainBonus = getTerrainBonus(selectedTerrains?.length ?? 0);
+  const confidence = Math.min(
+    97,
+    confidenceBase + terrainBonus + (tubeless ? 3 : 0) + (tireInserts ? 2 : 0),
+  );
 
   return {
     baseline: {
       front: clampF(Math.round(baseFront)),
       rear: clampR(Math.round(baseRear)),
       confidence: Math.round(confidence * 0.65),
-      note: 'Standard weight-based starting point before terrain & setup factors.',
+      note: "Standard weight-based starting point before terrain & setup factors.",
     },
     terrainAdjusted: {
       front: clampF(Math.round(terrainAdjFront)),
       rear: clampR(Math.round(terrainAdjRear)),
       confidence: Math.round(confidence * 0.85),
-      note: 'Adjusted for selected terrain types, weather and riding style.',
+      note: "Adjusted for selected terrain types, weather and riding style.",
     },
     aiRecommended: {
       front: clampF(Math.round(aiFront)),
       rear: clampR(Math.round(aiRear)),
       confidence,
-      note: 'Full AI optimisation: tubeless setup, inserts, temperature & all terrain factors.',
+      note: "Full AI optimisation: tubeless setup, inserts, temperature & all terrain factors.",
     },
   };
 }

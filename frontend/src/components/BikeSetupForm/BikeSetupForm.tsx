@@ -1,5 +1,9 @@
-import { Settings2 } from 'lucide-react';
-import { SegmentedControl } from '../ui/SegmentedControl';
+import { Settings2 } from "lucide-react";
+import { SegmentedControl } from "../ui/SegmentedControl";
+import { BIKE_TYPE_TIRE_DEFAULTS } from "../../types/rider-input";
+
+const FONT_DISPLAY = "var(--gripr-font-display)";
+const TEXT_MUTED = "var(--gripr-text-muted)";
 
 interface BikeSetupFormProps {
   bikeType: string;
@@ -20,29 +24,34 @@ interface BikeSetupFormProps {
   disabled?: boolean;
 }
 
-function GriprSwitch({ checked, onChange, disabled = false }: { checked: boolean; onChange: (v: boolean) => void; disabled?: boolean }) {
+function GriprSwitch({
+  checked,
+  onChange,
+  disabled = false,
+}: {
+  checked: boolean;
+  onChange: (v: boolean) => void;
+  disabled?: boolean;
+}) {
   return (
     <div
-      className={`gripr-switch-track ${checked ? 'on' : ''}`}
+      className={`gripr-switch-track ${checked ? "on" : ""}`}
       onClick={() => !disabled && onChange(!checked)}
       role="switch"
       aria-checked={checked}
       tabIndex={disabled ? -1 : 0}
-      onKeyDown={(e) => !disabled && (e.key === 'Enter' || e.key === ' ') && onChange(!checked)}
-      style={{ cursor: disabled ? 'not-allowed' : 'pointer', opacity: disabled ? 0.5 : 1 }}
+      onKeyDown={(e) =>
+        !disabled && (e.key === "Enter" || e.key === " ") && onChange(!checked)
+      }
+      style={{
+        cursor: disabled ? "not-allowed" : "pointer",
+        opacity: disabled ? 0.5 : 1,
+      }}
     >
       <div className="gripr-switch-thumb" />
     </div>
   );
 }
-
-const BIKE_TYPE_TIRE_DEFAULTS: Record<string, { front: number; rear: number }> = {
-  xc: { front: 2.2, rear: 2.2 },
-  trail: { front: 2.4, rear: 2.4 },
-  enduro: { front: 2.5, rear: 2.5 },
-  downhill: { front: 2.5, rear: 2.5 },
-  gravel: { front: 1.77, rear: 1.77 },
-};
 
 export function BikeSetupForm({
   bikeType,
@@ -62,18 +71,28 @@ export function BikeSetupForm({
   onTireInsertsChange,
   disabled = false,
 }: BikeSetupFormProps) {
-  const defaultTireWidth = BIKE_TYPE_TIRE_DEFAULTS[bikeType]?.front ?? 2.4;
+  const defaultTireWidth =
+    BIKE_TYPE_TIRE_DEFAULTS[bikeType as keyof typeof BIKE_TYPE_TIRE_DEFAULTS]
+      ?.front ?? 2.4;
 
   return (
     <div className="gripr-card">
       <div className="gripr-card-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div className="gripr-section-icon">
             <Settings2 size={18} strokeWidth={2} />
           </div>
           <div>
-            <div className="gripr-section-label" style={{ marginBottom: 0 }}>Step 3</div>
-            <h3 style={{ margin: 0, color: 'var(--gripr-text-primary)', fontFamily: 'var(--gripr-font-display)' }}>
+            <div className="gripr-section-label" style={{ marginBottom: 0 }}>
+              Step 3
+            </div>
+            <h3
+              style={{
+                margin: 0,
+                color: "var(--gripr-text-primary)",
+                fontFamily: FONT_DISPLAY,
+              }}
+            >
               Bike Setup
             </h3>
           </div>
@@ -81,20 +100,36 @@ export function BikeSetupForm({
       </div>
 
       <div className="gripr-card-body">
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem' }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+            gap: "1.25rem",
+          }}
+        >
           <div className="gripr-form-group" style={{ marginBottom: 0 }}>
             <label className="gripr-label">
               Bike Type
-              <span style={{ color: 'rgb(255, 140, 85)', marginLeft: 4, fontWeight: 600 }}>*</span>
+              <span
+                style={{
+                  color: "rgb(255, 140, 85)",
+                  marginLeft: 4,
+                  fontWeight: 600,
+                }}
+              >
+                *
+              </span>
             </label>
             <select
               className="gripr-select"
-              value={bikeType || ''}
+              value={bikeType || ""}
               onChange={(e) => onBikeTypeChange(e.target.value)}
               disabled={disabled}
-              style={{ borderColor: bikeTypeError ? '#dc3545' : undefined }}
+              style={{ borderColor: bikeTypeError ? "#dc3545" : undefined }}
             >
-              <option value="" disabled>Please select</option>
+              <option value="" disabled>
+                Please select
+              </option>
               <option value="xc">XC — Cross Country</option>
               <option value="trail">Trail</option>
               <option value="enduro">Enduro</option>
@@ -102,11 +137,23 @@ export function BikeSetupForm({
               <option value="gravel">Gravel</option>
             </select>
             {bikeTypeError ? (
-              <div style={{ marginTop: '0.4rem', fontSize: '0.75rem', color: '#dc3545' }}>
+              <div
+                style={{
+                  marginTop: "0.4rem",
+                  fontSize: "0.75rem",
+                  color: "#dc3545",
+                }}
+              >
                 {bikeTypeError}
               </div>
             ) : (
-              <div style={{ marginTop: '0.4rem', fontSize: '0.75rem', color: 'var(--gripr-text-muted)' }}>
+              <div
+                style={{
+                  marginTop: "0.4rem",
+                  fontSize: "0.75rem",
+                  color: TEXT_MUTED,
+                }}
+              >
                 Choose your bike type for optimal pressure recommendations
               </div>
             )}
@@ -123,30 +170,56 @@ export function BikeSetupForm({
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem', marginTop: '1.25rem' }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+            gap: "1.25rem",
+            marginTop: "1.25rem",
+          }}
+        >
           <div className="gripr-form-group" style={{ marginBottom: 0 }}>
             <label className="gripr-label">Front Tire Width</label>
             <div className="gripr-input-wrap">
               <input
                 type="number"
                 className="gripr-input"
-                value={tireFront || ''}
-                onChange={(e) => onTireFrontChange(e.target.value === '' ? undefined : Number(e.target.value))}
+                value={tireFront || ""}
+                onChange={(e) =>
+                  onTireFrontChange(
+                    e.target.value === "" ? undefined : Number(e.target.value),
+                  )
+                }
                 placeholder={defaultTireWidth.toString()}
                 min={1.5}
                 max={3.0}
                 step={0.05}
                 disabled={disabled}
-                style={{ paddingRight: '3.2rem', borderColor: tireFrontError ? '#dc3545' : undefined }}
+                style={{
+                  paddingRight: "3.2rem",
+                  borderColor: tireFrontError ? "#dc3545" : undefined,
+                }}
               />
               <span className="gripr-input-unit">inches</span>
             </div>
             {tireFrontError ? (
-              <div style={{ marginTop: '0.4rem', fontSize: '0.75rem', color: '#dc3545' }}>
+              <div
+                style={{
+                  marginTop: "0.4rem",
+                  fontSize: "0.75rem",
+                  color: "#dc3545",
+                }}
+              >
                 {tireFrontError}
               </div>
             ) : (
-              <div style={{ marginTop: '0.4rem', fontSize: '0.75rem', color: 'var(--gripr-text-muted)' }}>
+              <div
+                style={{
+                  marginTop: "0.4rem",
+                  fontSize: "0.75rem",
+                  color: TEXT_MUTED,
+                }}
+              >
                 Optional — defaults based on bike type
               </div>
             )}
@@ -158,42 +231,81 @@ export function BikeSetupForm({
               <input
                 type="number"
                 className="gripr-input"
-                value={tireRear || ''}
-                onChange={(e) => onTireRearChange(e.target.value === '' ? undefined : Number(e.target.value))}
+                value={tireRear || ""}
+                onChange={(e) =>
+                  onTireRearChange(
+                    e.target.value === "" ? undefined : Number(e.target.value),
+                  )
+                }
                 placeholder={defaultTireWidth.toString()}
                 min={1.5}
                 max={3.0}
                 step={0.05}
                 disabled={disabled}
-                style={{ paddingRight: '3.2rem', borderColor: tireRearError ? '#dc3545' : undefined }}
+                style={{
+                  paddingRight: "3.2rem",
+                  borderColor: tireRearError ? "#dc3545" : undefined,
+                }}
               />
               <span className="gripr-input-unit">inches</span>
             </div>
             {tireRearError ? (
-              <div style={{ marginTop: '0.4rem', fontSize: '0.75rem', color: '#dc3545' }}>
+              <div
+                style={{
+                  marginTop: "0.4rem",
+                  fontSize: "0.75rem",
+                  color: "#dc3545",
+                }}
+              >
                 {tireRearError}
               </div>
             ) : (
-              <div style={{ marginTop: '0.4rem', fontSize: '0.75rem', color: 'var(--gripr-text-muted)' }}>
+              <div
+                style={{
+                  marginTop: "0.4rem",
+                  fontSize: "0.75rem",
+                  color: TEXT_MUTED,
+                }}
+              >
                 Optional — defaults based on bike type
               </div>
             )}
           </div>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '1.25rem' }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "0.75rem",
+            marginTop: "1.25rem",
+          }}
+        >
           <div className="gripr-toggle-row">
             <div>
               <div className="gripr-toggle-label">Tubeless Setup</div>
               <div className="gripr-toggle-desc">
-                {tubeless ? 'Tubeless setup allows lower pressures with added puncture protection' : 'Tube setup requires slightly higher minimum pressures'}
+                {tubeless
+                  ? "Tubeless setup allows lower pressures with added puncture protection"
+                  : "Tube setup requires slightly higher minimum pressures"}
               </div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ fontSize: '0.78rem', fontWeight: 700, fontFamily: 'var(--gripr-font-display)', color: tubeless ? 'var(--gripr-accent)' : 'var(--gripr-text-muted)' }}>
-                {tubeless ? 'YES' : 'NO'}
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <span
+                style={{
+                  fontSize: "0.78rem",
+                  fontWeight: 700,
+                  fontFamily: FONT_DISPLAY,
+                  color: tubeless ? "var(--gripr-accent)" : TEXT_MUTED,
+                }}
+              >
+                {tubeless ? "YES" : "NO"}
               </span>
-              <GriprSwitch checked={tubeless} onChange={onTubelessChange} disabled={disabled} />
+              <GriprSwitch
+                checked={tubeless}
+                onChange={onTubelessChange}
+                disabled={disabled}
+              />
             </div>
           </div>
 
@@ -201,14 +313,27 @@ export function BikeSetupForm({
             <div>
               <div className="gripr-toggle-label">Tire Inserts</div>
               <div className="gripr-toggle-desc">
-                {tireInserts ? 'Tire inserts allow lower pressures with added rim protection' : 'No tire inserts, standard pressure recommendations apply'}
+                {tireInserts
+                  ? "Tire inserts allow lower pressures with added rim protection"
+                  : "No tire inserts, standard pressure recommendations apply"}
               </div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ fontSize: '0.78rem', fontWeight: 700, fontFamily: 'var(--gripr-font-display)', color: tireInserts ? 'var(--gripr-accent)' : 'var(--gripr-text-muted)' }}>
-                {tireInserts ? 'YES' : 'NO'}
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <span
+                style={{
+                  fontSize: "0.78rem",
+                  fontWeight: 700,
+                  fontFamily: FONT_DISPLAY,
+                  color: tireInserts ? "var(--gripr-accent)" : TEXT_MUTED,
+                }}
+              >
+                {tireInserts ? "YES" : "NO"}
               </span>
-              <GriprSwitch checked={tireInserts} onChange={onTireInsertsChange} disabled={disabled} />
+              <GriprSwitch
+                checked={tireInserts}
+                onChange={onTireInsertsChange}
+                disabled={disabled}
+              />
             </div>
           </div>
         </div>

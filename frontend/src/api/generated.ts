@@ -59,12 +59,12 @@ export interface ApiErrorResponse {
   details?: unknown;
 }
 
-export interface paths {
-  '/api/analyze': {
+export interface Paths {
+  "/api/analyze": {
     post: {
       requestBody: {
         content: {
-          'multipart/form-data': {
+          "multipart/form-data": {
             file: File;
             riderWeight: string;
             bikeType: string;
@@ -84,28 +84,28 @@ export interface paths {
       responses: {
         200: {
           content: {
-            'application/json': AnalyzeResponse;
+            "application/json": AnalyzeResponse;
           };
         };
         400: {
           content: {
-            'application/json': ApiErrorResponse;
+            "application/json": ApiErrorResponse;
           };
         };
         500: {
           content: {
-            'application/json': ApiErrorResponse;
+            "application/json": ApiErrorResponse;
           };
         };
       };
     };
   };
-  '/health': {
+  "/health": {
     get: {
       responses: {
         200: {
           content: {
-            'application/json': HealthResponse;
+            "application/json": HealthResponse;
           };
         };
       };

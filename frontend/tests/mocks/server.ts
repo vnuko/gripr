@@ -1,5 +1,5 @@
-import { setupServer } from 'msw/node';
-import { handlers, errorHandlers, networkErrorHandlers } from './handlers.js';
+import { setupServer } from "msw/node";
+import { handlers, errorHandlers, networkErrorHandlers } from "./handlers.js";
 
 export const server = setupServer(...handlers);
 

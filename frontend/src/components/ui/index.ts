@@ -1,1 +1,1 @@
-export { SegmentedControl } from './SegmentedControl.js';
+export { SegmentedControl } from "./SegmentedControl.js";
